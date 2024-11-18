@@ -7,7 +7,7 @@ interface IConversion {
                                 VIEWS
     ///////////////////////////////////////////////////////////////*/
 
-    function vestableAmount() public view returns (uint256) external;
+    function vestableAmount() external view returns (uint256);
 
     /*///////////////////////////////////////////////////////////////
                             MUTATIVE FUNCTIONS

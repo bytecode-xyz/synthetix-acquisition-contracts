@@ -10,7 +10,7 @@ import "./interfaces/IConversion.sol";
 contract Conversion is IConversion {
 
     /// @notice Fixed rate of 1:17 for KWENTA to SNX conversion
-    constant uint256 public CONVERSION_RATE = 17;
+    uint256 constant public CONVERSION_RATE = 17;
     
     mapping(address => uint256) public owedSNX;
     mapping(address => uint256) public claimedSNX;

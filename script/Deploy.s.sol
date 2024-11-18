@@ -15,8 +15,8 @@ import {Conversion} from "src/Conversion.sol";
 /// @author JaredBorders (jaredborders@pm.me)
 contract Setup is Script {
     function deploySystem() public returns (address) {
-        Counter counter = new Counter();
-        return address(counter);
+        Conversion conversion = new Conversion();
+        return address(conversion);
     }
 }
 

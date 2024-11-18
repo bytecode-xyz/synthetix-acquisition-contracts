@@ -3,7 +3,7 @@ pragma solidity 0.8.25;
 
 import {console2} from "lib/forge-std/src/console2.sol";
 import {
-    Counter,
+    Conversion,
     OptimismGoerliParameters,
     OptimismParameters,
     Setup
@@ -13,27 +13,27 @@ import {Test} from "lib/forge-std/src/Test.sol";
 contract Bootstrap is Test {
     using console2 for *;
 
-    Counter internal counter;
+    Conversion internal conversion;
 
     function initializeLocal() internal {
         BootstrapLocal bootstrap = new BootstrapLocal();
-        (address counterAddress) = bootstrap.init();
+        (address conversionAddress) = bootstrap.init();
 
-        counter = Counter(counterAddress);
+        conversion = Conversion(conversionAddress);
     }
 
     function initializeOptimismGoerli() internal {
         BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
-        (address counterAddress) = bootstrap.init();
+        (address conversionAddress) = bootstrap.init();
 
-        counter = Counter(counterAddress);
+        conversion = Conversion(conversionAddress);
     }
 
     function initializeOptimism() internal {
         BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
-        (address counterAddress) = bootstrap.init();
+        (address conversionAddress) = bootstrap.init();
 
-        counter = Counter(counterAddress);
+        conversion = Conversion(conversionAddress);
     }
 
     /// @dev add other networks here as needed (ex: Base, BaseGoerli)
@@ -41,25 +41,25 @@ contract Bootstrap is Test {
 
 contract BootstrapLocal is Setup {
     function init() public returns (address) {
-        address counterAddress = Setup.deploySystem();
+        address conversionAddress = Setup.deploySystem();
 
-        return counterAddress;
+        return conversionAddress;
     }
 }
 
 contract BootstrapOptimism is Setup, OptimismParameters {
     function init() public returns (address) {
-        address counterAddress = Setup.deploySystem();
+        address conversionAddress = Setup.deploySystem();
 
-        return counterAddress;
+        return conversionAddress;
     }
 }
 
 contract BootstrapOptimismGoerli is Setup, OptimismGoerliParameters {
     function init() public returns (address) {
-        address counterAddress = Setup.deploySystem();
+        address conversionAddress = Setup.deploySystem();
 
-        return counterAddress;
+        return conversionAddress;
     }
 }
 
