@@ -9,7 +9,7 @@ import {OptimismGoerliParameters} from
 import {OptimismParameters} from
     "script/utils/parameters/OptimismParameters.sol";
 import {Script} from "lib/forge-std/src/Script.sol";
-import {Counter} from "src/Counter.sol";
+import {Conversion} from "src/Conversion.sol";
 
 /// @title Kwenta deployment script
 /// @author JaredBorders (jaredborders@pm.me)
