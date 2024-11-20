@@ -30,9 +30,6 @@ contract Conversion is IConversion, Ownable {
     /// @dev From this derive 3 months cliff 9 month linear vesting
     uint256 public constant VESTING_START_TIME = /*todo*/ 0;
 
-    /// @notice Amount of SNX inflation deposited to the contract
-    uint256 public immutable SNX_INFLATION_AMOUNT;
-
     // CONTRACTS //////////////////////////////////////////
 
     /// @notice KWENTA token contract on OE
@@ -58,12 +55,10 @@ contract Conversion is IConversion, Ownable {
 
     /// @param _kwenta $KWENTA token address on OE
     /// @param _snx $SNX token address
-    /// @param _snxInflationAmount Amount of SNX inflation deposited to the contract
     /// @param _owner Owner of the contract
     constructor(
         address _kwenta,
         address _snx,
-        uint256 _snxInflationAmount,
         address _owner
     ) Ownable(_owner) {
         if (_kwenta == address(0) || _snx == address(0)) {
@@ -71,12 +66,6 @@ contract Conversion is IConversion, Ownable {
         }
         KWENTA = IERC20(_kwenta);
         SNX = IERC20(_snx);
-
-        if (_snxInflationAmount == 0) {
-            revert InsufficientSNXInflation();
-        }
-        SNX_INFLATION_AMOUNT = _snxInflationAmount;
-        SNX.transferFrom(msg.sender, address(this), _snxInflationAmount);
     }
 
     /*///////////////////////////////////////////////////////////////

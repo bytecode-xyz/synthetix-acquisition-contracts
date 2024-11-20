@@ -54,9 +54,6 @@ interface IConversion {
     /// @notice thrown when insufficient KWENTA is locked
     error InsufficientKWENTA();
 
-    /// @notice thrown when insufficient SNX inflation amount is provided
-    error InsufficientSNXInflation();
-
     /// @notice thrown when withdrawal start time is not reached
     error WithdrawalStartTimeNotReached();
 }
