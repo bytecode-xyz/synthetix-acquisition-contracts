@@ -32,7 +32,7 @@ contract Bootstrap is Test, Constants {
             address(SNX),
             TEST_OWNER
         );
-
+        SNX.transfer(conversionAddress, 1_000_000 * 10**18);
         conversion = Conversion(conversionAddress);
     }
 
