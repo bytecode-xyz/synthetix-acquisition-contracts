@@ -82,15 +82,24 @@ contract ConversionTest is Bootstrap {
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / LINEAR_VESTING_DURATION);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 3);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 3
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 3);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
     }
@@ -107,7 +116,10 @@ contract ConversionTest is Bootstrap {
         if (amount > LINEAR_VESTING_DURATION) {
             assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
         } else {
-            assertEq(vestableAmount, CONVERTED_SNX_AMOUNT * amount / LINEAR_VESTING_DURATION);
+            assertEq(
+                vestableAmount,
+                CONVERTED_SNX_AMOUNT * amount / LINEAR_VESTING_DURATION
+            );
         }
     }
 
@@ -118,7 +130,10 @@ contract ConversionTest is Bootstrap {
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
@@ -128,7 +143,10 @@ contract ConversionTest is Bootstrap {
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
     }
@@ -140,7 +158,10 @@ contract ConversionTest is Bootstrap {
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
@@ -148,7 +169,10 @@ contract ConversionTest is Bootstrap {
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT * 2);
     }
@@ -160,7 +184,10 @@ contract ConversionTest is Bootstrap {
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
@@ -171,7 +198,10 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
     }
@@ -186,7 +216,10 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXBefore, MINT_AMOUNT);
         assertEq(claimedSNXBefore, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
 
@@ -197,7 +230,10 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
 
@@ -219,7 +255,10 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXBefore, MINT_AMOUNT);
         assertEq(claimedSNXBefore, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vm.prank(TEST_USER_1);
         conversion.vest();
 
@@ -230,7 +269,10 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION
+        );
         vm.prank(TEST_USER_1);
         conversion.vest();
 
@@ -252,7 +294,10 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXBefore, MINT_AMOUNT);
         assertEq(claimedSNXBefore, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vm.prank(TEST_USER_1);
         conversion.vest();
 
@@ -267,7 +312,9 @@ contract ConversionTest is Bootstrap {
 
         uint256 contractSNXBeforeWithdraw = SNX.balanceOf(address(conversion));
         uint256 ownerSNXBeforeWithdraw = SNX.balanceOf(TEST_OWNER);
-        assertEq(contractSNXBeforeWithdraw, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
+        assertEq(
+            contractSNXBeforeWithdraw, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2)
+        );
         assertEq(ownerSNXBeforeWithdraw, 0);
 
         vm.warp(VESTING_START_TIME + WITHDRAW_START);
@@ -293,7 +340,10 @@ contract ConversionTest is Bootstrap {
     function testVestEmit() public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION / 2);
+        vm.warp(
+            VESTING_START_TIME + VESTING_CLIFF_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
         vm.prank(TEST_USER_1);
         vm.expectEmit(true, true, true, true);
         emit SNXVested(TEST_USER_1, TEST_USER_1, CONVERTED_SNX_AMOUNT / 2);
@@ -318,7 +368,11 @@ contract ConversionTest is Bootstrap {
 
     function testWithdrawSNXOnlyOwner() public {
         vm.prank(TEST_USER_1);
-        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", TEST_USER_1));
+        vm.expectRevert(
+            abi.encodeWithSignature(
+                "OwnableUnauthorizedAccount(address)", TEST_USER_1
+            )
+        );
         conversion.withdrawSNX();
     }
 
@@ -333,7 +387,9 @@ contract ConversionTest is Bootstrap {
         conversion.withdrawSNX();
     }
 
-    function testWithdrawSNXWithdrawalStartTimeNotReachedFuzz(uint128 amount) public {
+    function testWithdrawSNXWithdrawalStartTimeNotReachedFuzz(uint128 amount)
+        public
+    {
         vm.warp(VESTING_START_TIME + amount);
         if (amount < WITHDRAW_START) {
             vm.prank(TEST_OWNER);

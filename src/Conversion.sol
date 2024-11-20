@@ -29,7 +29,7 @@ contract Conversion is IConversion, Ownable {
     /// @notice Global start time for vesting
     /// @notice Friday, November 15, 2024 12:00:00 AM (GMT)
     /// @dev From this derive 3 months cliff 9 month linear vesting
-    uint256 public constant VESTING_START_TIME = 1731628800;
+    uint256 public constant VESTING_START_TIME = 1_731_628_800;
 
     // CONTRACTS //////////////////////////////////////////
 
@@ -57,11 +57,9 @@ contract Conversion is IConversion, Ownable {
     /// @param _kwenta $KWENTA token address on OE
     /// @param _snx $SNX token address
     /// @param _owner Owner of the contract
-    constructor(
-        address _kwenta,
-        address _snx,
-        address _owner
-    ) Ownable(_owner) {
+    constructor(address _kwenta, address _snx, address _owner)
+        Ownable(_owner)
+    {
         if (_kwenta == address(0) || _snx == address(0)) {
             revert AddressZero();
         }
