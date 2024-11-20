@@ -21,6 +21,11 @@ jobs:
               with:
                   version: nightly
 
+            - name: Install Foundry dependencies
+              run: |
+                  forge install OpenZeppelin/openzeppelin-contracts --no-commit --no-git
+                  forge build
+
             - name: Build Project
               run: |
                   forge --version
@@ -29,5 +34,5 @@ jobs:
 
             - name: Test Project
               run: |
-                forge test --fork-url ${{ secrets.OPTIMISM_GOERLI_RPC_URL }} --etherscan-api-key ${{ secrets.ETHERSCAN_API_KEY }} -vvv
+                forge test -vvv
               id: test
