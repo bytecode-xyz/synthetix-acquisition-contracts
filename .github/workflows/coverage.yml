@@ -21,6 +21,11 @@ jobs:
               with:
                   version: nightly
 
+            - name: Install Foundry dependencies
+              run: |
+                  forge install OpenZeppelin/openzeppelin-contracts --no-commit --no-git
+                  forge build
+
             - name: Report Coverage
               run: |
                 forge coverage --report lcov
