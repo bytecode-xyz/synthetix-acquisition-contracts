@@ -26,6 +26,10 @@ contract Conversion is IConversion, Ownable {
     /// @notice Withdrawal start time in seconds (2 years)
     uint256 public constant WITHDRAW_START = 730 days;
 
+    /// @notice Global start time for vesting
+    /// @dev From this derive 3 months cliff 9 month linear vesting
+    uint256 public constant VESTING_START_TIME = /*todo*/ 0;
+
     /// @notice Amount of SNX inflation deposited to the contract
     uint256 public immutable SNX_INFLATION_AMOUNT;
 
@@ -48,35 +52,25 @@ contract Conversion is IConversion, Ownable {
     /// @notice Mapping of addresses to the amount of SNX claimed
     mapping(address => uint256) public claimedSNX;
 
-    /// @notice Global start time for vesting
-    /// @dev From this derive 3 months cliff 9 month linear vesting
-    uint256 public vestingStartTime;
-
     /*//////////////////////////////////////////////////////////////
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
     /// @param _kwenta $KWENTA token address on OE
     /// @param _snx $SNX token address
-    /// @param _vestingStartTime Global start time for vesting
     /// @param _snxInflationAmount Amount of SNX inflation deposited to the contract
     /// @param _owner Owner of the contract
     constructor(
         address _kwenta,
         address _snx,
-        uint256 _vestingStartTime,
         uint256 _snxInflationAmount,
         address _owner
     ) Ownable(_owner) {
         if (_kwenta == address(0) || _snx == address(0)) {
             revert AddressZero();
         }
-        if (_vestingStartTime == 0) {
-            revert VestingStartTimeZero();
-        }
         KWENTA = IERC20(_kwenta);
         SNX = IERC20(_snx);
-        vestingStartTime = _vestingStartTime;
 
         if (_snxInflationAmount == 0) {
             revert InsufficientSNXInflation();
@@ -95,16 +89,13 @@ contract Conversion is IConversion, Ownable {
         view
         returns (uint256 vestableRemainder)
     {
-        uint256 timeCliffEnds = vestingStartTime + VESTING_CLIFF_DURATION;
+        uint256 timeCliffEnds = VESTING_START_TIME + VESTING_CLIFF_DURATION;
         if (block.timestamp < timeCliffEnds) {
-            return 0;
-        }
-        if (block.timestamp > vestingStartTime + WITHDRAW_START) {
             return 0;
         }
         vestableRemainder = (
             owedSNX[_account] * (block.timestamp - timeCliffEnds)
-        ) / LINEAR_VESTING_DURATION - claimedSNX[_account]; //todo consider when they find more kwenta to lock
+        ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -113,8 +104,6 @@ contract Conversion is IConversion, Ownable {
 
     /// @inheritdoc IConversion
     function lockAndConvert() public {
-        //todo consider the case where they get more kwenta and then do this again
-
         uint256 kwentaAmount = KWENTA.balanceOf(msg.sender);
         if (kwentaAmount == 0) {
             revert InsufficientKWENTA();
@@ -134,15 +123,16 @@ contract Conversion is IConversion, Ownable {
 
     /// @inheritdoc IConversion
     function vest(address to) public returns (uint256 amountVested) {
-        amountVested = vestableAmount(msg.sender);
-        claimedSNX[msg.sender] += amountVested;
+        address caller = msg.sender;
+        amountVested = vestableAmount(caller);
+        claimedSNX[caller] += amountVested;
         SNX.transfer(to, amountVested);
-        emit SNXVested(msg.sender, to, amountVested);
+        emit SNXVested(caller, to, amountVested);
     }
 
     /// @inheritdoc IConversion
     function withdrawSNX() public onlyOwner {
-        if (block.timestamp < vestingStartTime + WITHDRAW_START) {
+        if (block.timestamp < VESTING_START_TIME + WITHDRAW_START) {
             revert WithdrawalStartTimeNotReached();
         }
         SNX.transfer(msg.sender, SNX.balanceOf(address(this)));

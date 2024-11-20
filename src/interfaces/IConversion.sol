@@ -51,9 +51,6 @@ interface IConversion {
     /// @notice thrown when address is 0
     error AddressZero();
 
-    /// @notice thrown when vesting start time is 0
-    error VestingStartTimeZero();
-
     /// @notice thrown when insufficient KWENTA is locked
     error InsufficientKWENTA();
 
