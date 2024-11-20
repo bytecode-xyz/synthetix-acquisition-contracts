@@ -10,5 +10,7 @@ contract Constants {
     uint256 internal constant CONVERTED_SNX_AMOUNT = TEST_AMOUNT * 17;
     uint256 internal constant VESTING_CLIFF_DURATION = 90 days;
     uint256 internal constant VESTING_START_TIME = 1731628800;
+    uint256 internal constant WITHDRAW_START = 730 days;
     uint256 internal constant LINEAR_VESTING_DURATION = 270 days;
+    uint256 internal constant MINT_AMOUNT = 1_000_000 * 10**18;
 }
