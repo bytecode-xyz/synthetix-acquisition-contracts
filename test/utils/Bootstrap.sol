@@ -9,58 +9,80 @@ import {
     Setup
 } from "script/Deploy.s.sol";
 import {Test} from "lib/forge-std/src/Test.sol";
+import {MockToken} from "test/utils/MockToken.sol";
+import {Constants} from "./Constants.sol";
 
-contract Bootstrap is Test {
+contract Bootstrap is Test, Constants {
     using console2 for *;
 
+    /// @dev for testing
+    event KWENTALocked(address indexed from, uint256 value);
+    event SNXVested(address indexed from, address indexed to, uint256 value);
+
     Conversion internal conversion;
+    MockToken internal KWENTA;
+    MockToken internal SNX;
 
     function initializeLocal() internal {
+        KWENTA = new MockToken();
+        SNX = new MockToken();
         BootstrapLocal bootstrap = new BootstrapLocal();
-        (address conversionAddress) = bootstrap.init();
+        (address conversionAddress) = bootstrap.init(
+            address(KWENTA),
+            address(SNX),
+            TEST_OWNER
+        );
 
         conversion = Conversion(conversionAddress);
     }
 
-    function initializeOptimismGoerli() internal {
-        BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
-        (address conversionAddress) = bootstrap.init();
+    // function initializeOptimismGoerli() internal {
+    //     BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
+    //     (address conversionAddress) = bootstrap.init();
 
-        conversion = Conversion(conversionAddress);
-    }
+    //     conversion = Conversion(conversionAddress);
+    // }
 
-    function initializeOptimism() internal {
-        BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
-        (address conversionAddress) = bootstrap.init();
+    // function initializeOptimism() internal {
+    //     BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
+    //     (address conversionAddress) = bootstrap.init();
 
-        conversion = Conversion(conversionAddress);
-    }
+    //     conversion = Conversion(conversionAddress);
+    // }
 
     /// @dev add other networks here as needed (ex: Base, BaseGoerli)
 }
 
 contract BootstrapLocal is Setup {
-    function init() public returns (address) {
-        address conversionAddress = Setup.deploySystem();
+    function init(
+        address _kwenta,
+        address _snx,
+        address _owner
+    ) public returns (address) {
+        address conversionAddress = Setup.deploySystem(
+            _kwenta,
+            _snx,
+            _owner
+        );
 
         return conversionAddress;
     }
 }
 
-contract BootstrapOptimism is Setup, OptimismParameters {
-    function init() public returns (address) {
-        address conversionAddress = Setup.deploySystem();
+// contract BootstrapOptimism is Setup, OptimismParameters {
+//     function init() public returns (address) {
+//         address conversionAddress = Setup.deploySystem();
 
-        return conversionAddress;
-    }
-}
+//         return conversionAddress;
+//     }
+// }
 
-contract BootstrapOptimismGoerli is Setup, OptimismGoerliParameters {
-    function init() public returns (address) {
-        address conversionAddress = Setup.deploySystem();
+// contract BootstrapOptimismGoerli is Setup, OptimismGoerliParameters {
+//     function init() public returns (address) {
+//         address conversionAddress = Setup.deploySystem();
 
-        return conversionAddress;
-    }
-}
+//         return conversionAddress;
+//     }
+// }
 
 // add other networks here as needed (ex: Base, BaseGoerli)
