@@ -27,8 +27,9 @@ contract Conversion is IConversion, Ownable {
     uint256 public constant WITHDRAW_START = 730 days;
 
     /// @notice Global start time for vesting
+    /// @notice Friday, November 15, 2024 12:00:00 AM (GMT)
     /// @dev From this derive 3 months cliff 9 month linear vesting
-    uint256 public constant VESTING_START_TIME = /*todo*/ 0;
+    uint256 public constant VESTING_START_TIME = 1731628800;
 
     // CONTRACTS //////////////////////////////////////////
 
@@ -85,6 +86,11 @@ contract Conversion is IConversion, Ownable {
         vestableRemainder = (
             owedSNX[_account] * (block.timestamp - timeCliffEnds)
         ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
+        if (vestableRemainder > owedSNX[_account]) {
+            return owedSNX[_account];
+        } else {
+            return vestableRemainder;
+        }
     }
 
     /*///////////////////////////////////////////////////////////////
