@@ -31,6 +31,11 @@ contract Conversion is IConversion, Ownable {
     /// @dev From this derive 3 months cliff 9 month linear vesting
     uint256 public constant VESTING_START_TIME = 1_731_628_800;
 
+    /// @notice Time at which the cliff ends
+    /// @dev VESTING_START_TIME + VESTING_CLIFF_DURATION
+    /// @dev initialized during construction
+    uint256 public immutable timeCliffEnds;
+
     // CONTRACTS //////////////////////////////////////////
 
     /// @notice KWENTA token contract on OE
@@ -65,6 +70,7 @@ contract Conversion is IConversion, Ownable {
         }
         KWENTA = IERC20(_kwenta);
         SNX = IERC20(_snx);
+        timeCliffEnds = VESTING_START_TIME + VESTING_CLIFF_DURATION;
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -77,7 +83,6 @@ contract Conversion is IConversion, Ownable {
         view
         returns (uint256 vestableRemainder)
     {
-        uint256 timeCliffEnds = VESTING_START_TIME + VESTING_CLIFF_DURATION;
         if (block.timestamp < timeCliffEnds) {
             return 0;
         }
