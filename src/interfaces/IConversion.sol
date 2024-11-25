@@ -14,6 +14,7 @@ interface IConversion {
     ///////////////////////////////////////////////////////////////*/
 
     /// @notice Locks KWENTA and converts it to SNX
+    /// @notice requires KWENTA to be approved
     function lockAndConvert() external;
 
     /// @notice Vests SNX
