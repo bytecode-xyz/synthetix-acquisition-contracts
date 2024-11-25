@@ -39,7 +39,7 @@ interface IConversion {
     /// @param value The amount of KWENTA that was locked
     event KWENTALocked(address indexed from, uint256 value);
 
-    /// @notice emitted when KWENTA is deposited for conversion
+    /// @notice emitted when SNX is vested and withdrawn
     /// @param from The account that is vesting SNX
     /// @param from The account that is receiving vested SNX
     /// @param value The amount of SNX that was vested
