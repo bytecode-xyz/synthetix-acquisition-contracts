@@ -140,8 +140,7 @@ contract ConversionTest is Bootstrap {
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
@@ -187,8 +186,7 @@ contract ConversionTest is Bootstrap {
         assertEq(vestableAmount, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
@@ -213,8 +211,7 @@ contract ConversionTest is Bootstrap {
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT * 2);
@@ -242,8 +239,7 @@ contract ConversionTest is Bootstrap {
         conversion.vest(TEST_USER_1);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
@@ -274,8 +270,7 @@ contract ConversionTest is Bootstrap {
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
@@ -313,8 +308,7 @@ contract ConversionTest is Bootstrap {
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION
-                + LINEAR_VESTING_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
         );
         vm.prank(TEST_USER_1);
         conversion.vest();
