@@ -8,12 +8,52 @@ contract ConversionTest is Bootstrap {
     function setUp() public {
         initializeLocal();
         /// @dev warp ahead of the vesting start time to simulate deployment conditions
+        /// (i.e. the contract is deployed after the vesting start time)
         vm.warp(VESTING_START_TIME + 1 weeks);
     }
 
-    function testConversionRateFixed17to1() public {}
+    function testConversionRateFixed17to1(uint256 amount) public {
+        vm.assume(amount <= type(uint256).max / 17);
+        vm.assume(amount > 0);
+        KWENTA.mint(TEST_USER_1, amount);
+        uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
+        assertEq(owedSNXBefore, 0);
+
+        vm.startPrank(TEST_USER_1);
+        KWENTA.approve(address(conversion), amount);
+        conversion.lockAndConvert();
+        vm.stopPrank();
+
+        uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
+        uint256 expectedOwedSNX = amount * 17;
+        assertEq(owedSNXAfter, expectedOwedSNX);
+    }
 
     function testLockAndConvert() public {
+        KWENTA.mint(TEST_USER_1, TEST_AMOUNT);
+        uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
+        uint256 userKWENTABefore = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTABefore = KWENTA.balanceOf(address(conversion));
+        assertEq(owedSNXBefore, 0);
+        assertEq(userKWENTABefore, TEST_AMOUNT);
+        assertEq(contractKWENTABefore, 0);
+
+        vm.startPrank(TEST_USER_1);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
+        conversion.lockAndConvert();
+        vm.stopPrank();
+
+        uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
+        uint256 userKWENTAAfter = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTAAfter = KWENTA.balanceOf(address(conversion));
+        assertEq(owedSNXAfter, CONVERTED_SNX_AMOUNT);
+        assertEq(userKWENTAAfter, 0);
+        assertEq(contractKWENTAAfter, TEST_AMOUNT);
+    }
+
+    function testLockAndConvertAfterVestingDuration() public {
+        vm.warp(block.timestamp + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION + 1);
+
         KWENTA.mint(TEST_USER_1, TEST_AMOUNT);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
         uint256 userKWENTABefore = KWENTA.balanceOf(TEST_USER_1);
@@ -282,6 +322,29 @@ contract ConversionTest is Bootstrap {
         assertEq(userSNXFinal, CONVERTED_SNX_AMOUNT);
         assertEq(contractSNXFinal, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT);
+    }
+
+    function testVestBasicAndLockAndVestAgain() public {
+        testVestBasic();
+
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
+        uint256 claimedSNXBefore = conversion.claimedSNX(TEST_USER_1);
+        assertEq(userSNXBefore, CONVERTED_SNX_AMOUNT);
+        assertEq(contractSNXBefore, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
+        assertEq(claimedSNXBefore, CONVERTED_SNX_AMOUNT);
+
+        /// @dev note that the KWENTA will be fully vested by this point
+        basicLock();
+        vm.prank(TEST_USER_1);
+        conversion.vest();
+
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
+        uint256 claimedSNXAfter = conversion.claimedSNX(TEST_USER_1);
+        assertEq(userSNXAfter, CONVERTED_SNX_AMOUNT * 2);
+        assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT * 2));
+        assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT * 2);
     }
 
     function testVestAfterWithdraw() public {
