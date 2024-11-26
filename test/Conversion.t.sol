@@ -311,14 +311,14 @@ contract ConversionTest is Bootstrap {
         // withdraw
 
         uint256 contractSNXBeforeWithdraw = SNX.balanceOf(address(conversion));
-        uint256 ownerSNXBeforeWithdraw = SNX.balanceOf(TEST_OWNER);
+        uint256 ownerSNXBeforeWithdraw = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(
             contractSNXBeforeWithdraw, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2)
         );
         assertEq(ownerSNXBeforeWithdraw, 0);
 
         vm.warp(VESTING_START_TIME + WITHDRAW_START);
-        vm.prank(TEST_OWNER);
+        vm.prank(SYNTHETIX_TREASURY);
         conversion.withdrawSNX();
         vm.prank(TEST_USER_1);
         vm.expectRevert();
@@ -332,7 +332,7 @@ contract ConversionTest is Bootstrap {
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT / 2);
 
         uint256 contractSNXAfterWithdraw = SNX.balanceOf(address(conversion));
-        uint256 ownerSNXAfterWithdraw = SNX.balanceOf(TEST_OWNER);
+        uint256 ownerSNXAfterWithdraw = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfterWithdraw, 0);
         assertEq(ownerSNXAfterWithdraw, MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2);
     }
@@ -352,38 +352,34 @@ contract ConversionTest is Bootstrap {
 
     function testWithdrawSNX() public {
         uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
-        uint256 ownerSNXBefore = SNX.balanceOf(TEST_OWNER);
+        uint256 ownerSNXBefore = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXBefore, MINT_AMOUNT);
         assertEq(ownerSNXBefore, 0);
 
         vm.warp(VESTING_START_TIME + WITHDRAW_START);
-        vm.prank(TEST_OWNER);
+        vm.prank(SYNTHETIX_TREASURY);
         conversion.withdrawSNX();
 
         uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
-        uint256 ownerSNXAfter = SNX.balanceOf(TEST_OWNER);
+        uint256 ownerSNXAfter = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfter, 0);
         assertEq(ownerSNXAfter, MINT_AMOUNT);
     }
 
     function testWithdrawSNXOnlyOwner() public {
         vm.prank(TEST_USER_1);
-        vm.expectRevert(
-            abi.encodeWithSignature(
-                "OwnableUnauthorizedAccount(address)", TEST_USER_1
-            )
-        );
+        vm.expectRevert(IConversion.Unauthorized.selector);
         conversion.withdrawSNX();
     }
 
     function testWithdrawSNXWithdrawalStartTimeNotReached() public {
         vm.warp(VESTING_START_TIME + WITHDRAW_START - 1);
-        vm.prank(TEST_OWNER);
+        vm.prank(SYNTHETIX_TREASURY);
         vm.expectRevert(IConversion.WithdrawalStartTimeNotReached.selector);
         conversion.withdrawSNX();
 
         vm.warp(block.timestamp + 1);
-        vm.prank(TEST_OWNER);
+        vm.prank(SYNTHETIX_TREASURY);
         conversion.withdrawSNX();
     }
 
@@ -392,11 +388,11 @@ contract ConversionTest is Bootstrap {
     {
         vm.warp(VESTING_START_TIME + amount);
         if (amount < WITHDRAW_START) {
-            vm.prank(TEST_OWNER);
+            vm.prank(SYNTHETIX_TREASURY);
             vm.expectRevert(IConversion.WithdrawalStartTimeNotReached.selector);
             conversion.withdrawSNX();
         } else {
-            vm.prank(TEST_OWNER);
+            vm.prank(SYNTHETIX_TREASURY);
             conversion.withdrawSNX();
         }
     }

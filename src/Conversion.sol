@@ -3,13 +3,12 @@ pragma solidity 0.8.25;
 
 import {IConversion} from "./interfaces/IConversion.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Kwenta Acquisition Token Conversion Contract
 /// @notice Responsible for converting KWENTA tokens to SNX at a fixed rate of 1:17
 /// @author Jeremy Chiaramonte (jeremy@bytecode.llc)
 /// @author Andrew Chiaramonte (andrewc@kwenta.io)
-contract Conversion is IConversion, Ownable {
+contract Conversion is IConversion {
     /*//////////////////////////////////////////////////////////////
                           CONSTANTS/IMMUTABLES
     //////////////////////////////////////////////////////////////*/
@@ -30,6 +29,9 @@ contract Conversion is IConversion, Ownable {
     /// @notice Friday, November 15, 2024 12:00:00 AM (GMT)
     /// @dev From this derive 3 months cliff 9 month linear vesting
     uint256 public constant VESTING_START_TIME = 1_731_628_800;
+
+    /// @notice Address of the Synthetix treasury
+    address public constant SYNTHETIX_TREASURY = 0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
 
     /// @notice Time at which the cliff ends
     /// @dev VESTING_START_TIME + VESTING_CLIFF_DURATION
@@ -61,10 +63,7 @@ contract Conversion is IConversion, Ownable {
 
     /// @param _kwenta $KWENTA token address on OE
     /// @param _snx $SNX token address
-    /// @param _owner Owner of the contract
-    constructor(address _kwenta, address _snx, address _owner)
-        Ownable(_owner)
-    {
+    constructor(address _kwenta, address _snx) {
         if (_kwenta == address(0) || _snx == address(0)) {
             revert AddressZero();
         }
@@ -129,7 +128,10 @@ contract Conversion is IConversion, Ownable {
     }
 
     /// @inheritdoc IConversion
-    function withdrawSNX() public onlyOwner {
+    function withdrawSNX() public {
+        if (msg.sender != SYNTHETIX_TREASURY) {
+            revert Unauthorized();
+        }
         if (block.timestamp < VESTING_START_TIME + WITHDRAW_START) {
             revert WithdrawalStartTimeNotReached();
         }

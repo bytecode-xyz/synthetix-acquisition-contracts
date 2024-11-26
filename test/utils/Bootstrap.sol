@@ -28,7 +28,7 @@ contract Bootstrap is Test, Constants {
         SNX = new MockToken();
         BootstrapLocal bootstrap = new BootstrapLocal();
         (address conversionAddress) =
-            bootstrap.init(address(KWENTA), address(SNX), TEST_OWNER);
+            bootstrap.init(address(KWENTA), address(SNX));
         SNX.transfer(conversionAddress, MINT_AMOUNT);
         conversion = Conversion(conversionAddress);
     }
@@ -51,11 +51,11 @@ contract Bootstrap is Test, Constants {
 }
 
 contract BootstrapLocal is Setup {
-    function init(address _kwenta, address _snx, address _owner)
+    function init(address _kwenta, address _snx)
         public
         returns (address)
     {
-        address conversionAddress = Setup.deploySystem(_kwenta, _snx, _owner);
+        address conversionAddress = Setup.deploySystem(_kwenta, _snx);
 
         return conversionAddress;
     }

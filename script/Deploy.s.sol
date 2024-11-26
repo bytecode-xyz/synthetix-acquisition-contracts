@@ -14,11 +14,11 @@ import {Conversion} from "src/Conversion.sol";
 /// @title Kwenta deployment script
 /// @author JaredBorders (jaredborders@pm.me)
 contract Setup is Script {
-    function deploySystem(address _kwenta, address _snx, address _owner)
+    function deploySystem(address _kwenta, address _snx)
         public
         returns (address)
     {
-        Conversion conversion = new Conversion(_kwenta, _snx, _owner);
+        Conversion conversion = new Conversion(_kwenta, _snx);
         return address(conversion);
     }
 }

@@ -57,4 +57,7 @@ interface IConversion {
 
     /// @notice thrown when withdrawal start time is not reached
     error WithdrawalStartTimeNotReached();
+
+    /// @notice thrown when caller is not the owner
+    error Unauthorized();
 }
