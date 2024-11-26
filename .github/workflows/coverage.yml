@@ -28,7 +28,7 @@ jobs:
 
             - name: Report Coverage
               run: |
-                forge coverage --report lcov
+                forge coverage --report summary
             - name: Upload Coverage Report
               uses: codecov/codecov-action@v3
               with:
