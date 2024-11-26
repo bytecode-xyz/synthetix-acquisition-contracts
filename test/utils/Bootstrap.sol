@@ -51,10 +51,7 @@ contract Bootstrap is Test, Constants {
 }
 
 contract BootstrapLocal is Setup {
-    function init(address _kwenta, address _snx)
-        public
-        returns (address)
-    {
+    function init(address _kwenta, address _snx) public returns (address) {
         address conversionAddress = Setup.deploySystem(_kwenta, _snx);
 
         return conversionAddress;

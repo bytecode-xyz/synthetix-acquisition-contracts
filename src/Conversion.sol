@@ -31,7 +31,8 @@ contract Conversion is IConversion {
     uint256 public constant VESTING_START_TIME = 1_731_628_800;
 
     /// @notice Address of the Synthetix treasury
-    address public constant SYNTHETIX_TREASURY = 0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
+    address public constant SYNTHETIX_TREASURY =
+        0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
 
     /// @notice Time at which the cliff ends
     /// @dev VESTING_START_TIME + VESTING_CLIFF_DURATION

@@ -52,7 +52,10 @@ contract ConversionTest is Bootstrap {
     }
 
     function testLockAndConvertAfterVestingDuration() public {
-        vm.warp(block.timestamp + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION + 1);
+        vm.warp(
+            block.timestamp + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION
+                + 1
+        );
 
         KWENTA.mint(TEST_USER_1, TEST_AMOUNT);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);

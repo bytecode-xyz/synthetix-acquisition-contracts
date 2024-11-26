@@ -3,7 +3,8 @@ pragma solidity 0.8.25;
 
 /// @title Contract for defining constants used in testing
 contract Constants {
-    address internal constant SYNTHETIX_TREASURY = 0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
+    address internal constant SYNTHETIX_TREASURY =
+        0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
     address internal constant TEST_USER_1 = address(0x2);
     address internal constant TEST_USER_2 = address(0x3);
     uint256 internal constant TEST_AMOUNT = 1000 * 10 ** 18;
