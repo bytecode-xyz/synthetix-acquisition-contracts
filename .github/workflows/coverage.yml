@@ -29,10 +29,4 @@ jobs:
             - name: Report Coverage
               run: |
                 forge coverage --report summary
-            - name: Upload Coverage Report
-              uses: codecov/codecov-action@v3
-              with:
-                  files: ./lcov.info
-                  name: codecov-unit
-                  fail_ci_if_error: true
-                  verbose: true
+                forge coverage --report debug
