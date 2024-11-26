@@ -81,12 +81,12 @@ contract Conversion is IConversion {
     function vestableAmount(address _account)
         public
         view
-        returns (uint256 vestableRemainder)
+        returns (uint256)
     {
         if (block.timestamp < timeCliffEnds) {
             return 0;
         }
-        vestableRemainder = (
+        uint256 vestableRemainder = (
             owedSNX[_account] * (block.timestamp - timeCliffEnds)
         ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
         if (vestableRemainder > owedSNX[_account]) {

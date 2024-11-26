@@ -7,6 +7,7 @@ interface IConversion {
     ///////////////////////////////////////////////////////////////*/
 
     /// @notice Returns the amount of SNX that can be vested
+    /// @return The amount of SNX that can be vested
     function vestableAmount(address) external view returns (uint256);
 
     /*///////////////////////////////////////////////////////////////
