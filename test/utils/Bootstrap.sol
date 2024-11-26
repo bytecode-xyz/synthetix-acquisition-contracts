@@ -11,7 +11,8 @@ import {
 import {Test} from "lib/forge-std/src/Test.sol";
 import {MockToken} from "test/utils/MockToken.sol";
 import {Constants} from "./Constants.sol";
-import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from
+    "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract Bootstrap is Test, Constants {
     using console2 for *;
@@ -41,7 +42,8 @@ contract Bootstrap is Test, Constants {
     function initializeOptimism() internal {
         vm.rollFork(OPTIMISM_BLOCK_NUMBER);
         bootstrapOptimism = new BootstrapOptimism();
-        (address conversionAddress, address kwenta, address snx) = bootstrapOptimism.init();
+        (address conversionAddress, address kwenta, address snx) =
+            bootstrapOptimism.init();
 
         conversion = Conversion(conversionAddress);
         KWENTA = IERC20(kwenta);
@@ -49,7 +51,6 @@ contract Bootstrap is Test, Constants {
         vm.prank(SYNTHETIX_TREASURY);
         SNX.transfer(conversionAddress, MINT_AMOUNT);
     }
-
 }
 
 contract BootstrapLocal is Setup {

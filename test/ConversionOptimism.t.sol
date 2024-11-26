@@ -401,7 +401,10 @@ contract ConversionTestOptimism is Bootstrap {
         uint256 contractSNXAfterWithdraw = SNX.balanceOf(address(conversion));
         uint256 ownerSNXAfterWithdraw = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfterWithdraw, 0);
-        assertEq(ownerSNXAfterWithdraw, ownerSNXBeforeWithdraw + MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2);
+        assertEq(
+            ownerSNXAfterWithdraw,
+            ownerSNXBeforeWithdraw + MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2
+        );
     }
 
     function testVestEmit() public {

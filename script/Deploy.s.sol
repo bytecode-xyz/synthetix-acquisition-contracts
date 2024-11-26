@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity 0.8.25;
 
-import {OptimismParameters} from
-    "./utils/parameters/OptimismParameters.sol";
+import {OptimismParameters} from "./utils/parameters/OptimismParameters.sol";
 import {Script} from "lib/forge-std/src/Script.sol";
 import {Conversion} from "src/Conversion.sol";
 

@@ -376,7 +376,8 @@ contract ConversionTest is Bootstrap {
 
         // withdraw
 
-        uint256 contractSNXBeforeWithdraw = SNXMock.balanceOf(address(conversion));
+        uint256 contractSNXBeforeWithdraw =
+            SNXMock.balanceOf(address(conversion));
         uint256 ownerSNXBeforeWithdraw = SNXMock.balanceOf(SYNTHETIX_TREASURY);
         assertEq(
             contractSNXBeforeWithdraw, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2)
@@ -397,7 +398,8 @@ contract ConversionTest is Bootstrap {
         assertEq(contractSNXFinal, 0);
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT / 2);
 
-        uint256 contractSNXAfterWithdraw = SNXMock.balanceOf(address(conversion));
+        uint256 contractSNXAfterWithdraw =
+            SNXMock.balanceOf(address(conversion));
         uint256 ownerSNXAfterWithdraw = SNXMock.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfterWithdraw, 0);
         assertEq(ownerSNXAfterWithdraw, MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2);
