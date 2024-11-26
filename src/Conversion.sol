@@ -32,7 +32,7 @@ contract Conversion is IConversion {
 
     /// @notice Address of the Synthetix treasury
     address public constant SYNTHETIX_TREASURY =
-        0x99F4176EE457afedFfCB1839c7aB7A030a5e4A92;
+        0xa5f7a39E55D7878bC5bd754eE5d6BD7a7662355b; //todo: change to actual address
 
     /// @notice Time at which the cliff ends
     /// @dev VESTING_START_TIME + VESTING_CLIFF_DURATION
@@ -41,11 +41,11 @@ contract Conversion is IConversion {
 
     // CONTRACTS //////////////////////////////////////////
 
-    /// @notice KWENTA token contract on OE
-    IERC20 private immutable KWENTA;
+    /// @notice KWENTA token contract
+    IERC20 public immutable KWENTA;
 
     /// @notice SNX token contract
-    IERC20 private immutable SNX;
+    IERC20 public immutable SNX;
 
     /*//////////////////////////////////////////////////////////////
                                 STATE
@@ -62,7 +62,7 @@ contract Conversion is IConversion {
                                CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
 
-    /// @param _kwenta $KWENTA token address on OE
+    /// @param _kwenta $KWENTA token address
     /// @param _snx $SNX token address
     constructor(address _kwenta, address _snx) {
         if (_kwenta == address(0) || _snx == address(0)) {
