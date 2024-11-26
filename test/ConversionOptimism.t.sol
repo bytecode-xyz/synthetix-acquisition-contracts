@@ -4,9 +4,9 @@ pragma solidity 0.8.25;
 import {Bootstrap} from "test/utils/Bootstrap.sol";
 import {IConversion} from "src/interfaces/IConversion.sol";
 
-contract ConversionTest is Bootstrap {
+contract ConversionTestOptimism is Bootstrap {
     function setUp() public {
-        initializeLocal();
+        initializeOptimism();
         /// @dev warp ahead of the vesting start time to simulate deployment conditions
         /// (i.e. the contract is deployed after the vesting start time)
         vm.warp(VESTING_START_TIME + 1 weeks);
@@ -14,13 +14,15 @@ contract ConversionTest is Bootstrap {
 
     function testConversionRateFixed17to1(uint256 amount) public {
         vm.assume(amount <= type(uint256).max / 17);
+        /// @dev this is for setup purposes
+        vm.assume(amount <= KWENTA.balanceOf(KWENTA_TREASURY));
         vm.assume(amount > 0);
-        KWENTAMock.mint(TEST_USER_1, amount);
+        mintKwenta(TEST_USER_1, amount);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
         assertEq(owedSNXBefore, 0);
 
         vm.startPrank(TEST_USER_1);
-        KWENTAMock.approve(address(conversion), amount);
+        KWENTA.approve(address(conversion), amount);
         conversion.lockAndConvert();
         vm.stopPrank();
 
@@ -30,22 +32,22 @@ contract ConversionTest is Bootstrap {
     }
 
     function testLockAndConvert() public {
-        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        mintKwenta(TEST_USER_1, TEST_AMOUNT);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
-        uint256 userKWENTABefore = KWENTAMock.balanceOf(TEST_USER_1);
-        uint256 contractKWENTABefore = KWENTAMock.balanceOf(address(conversion));
+        uint256 userKWENTABefore = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTABefore = KWENTA.balanceOf(address(conversion));
         assertEq(owedSNXBefore, 0);
         assertEq(userKWENTABefore, TEST_AMOUNT);
         assertEq(contractKWENTABefore, 0);
 
         vm.startPrank(TEST_USER_1);
-        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
         conversion.lockAndConvert();
         vm.stopPrank();
 
         uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
-        uint256 userKWENTAAfter = KWENTAMock.balanceOf(TEST_USER_1);
-        uint256 contractKWENTAAfter = KWENTAMock.balanceOf(address(conversion));
+        uint256 userKWENTAAfter = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTAAfter = KWENTA.balanceOf(address(conversion));
         assertEq(owedSNXAfter, CONVERTED_SNX_AMOUNT);
         assertEq(userKWENTAAfter, 0);
         assertEq(contractKWENTAAfter, TEST_AMOUNT);
@@ -57,31 +59,31 @@ contract ConversionTest is Bootstrap {
                 + 1
         );
 
-        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        mintKwenta(TEST_USER_1, TEST_AMOUNT);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
-        uint256 userKWENTABefore = KWENTAMock.balanceOf(TEST_USER_1);
-        uint256 contractKWENTABefore = KWENTAMock.balanceOf(address(conversion));
+        uint256 userKWENTABefore = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTABefore = KWENTA.balanceOf(address(conversion));
         assertEq(owedSNXBefore, 0);
         assertEq(userKWENTABefore, TEST_AMOUNT);
         assertEq(contractKWENTABefore, 0);
 
         vm.startPrank(TEST_USER_1);
-        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
         conversion.lockAndConvert();
         vm.stopPrank();
 
         uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
-        uint256 userKWENTAAfter = KWENTAMock.balanceOf(TEST_USER_1);
-        uint256 contractKWENTAAfter = KWENTAMock.balanceOf(address(conversion));
+        uint256 userKWENTAAfter = KWENTA.balanceOf(TEST_USER_1);
+        uint256 contractKWENTAAfter = KWENTA.balanceOf(address(conversion));
         assertEq(owedSNXAfter, CONVERTED_SNX_AMOUNT);
         assertEq(userKWENTAAfter, 0);
         assertEq(contractKWENTAAfter, TEST_AMOUNT);
     }
 
     function testLockAndConvertEmit() public {
-        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        mintKwenta(TEST_USER_1, TEST_AMOUNT);
         vm.startPrank(TEST_USER_1);
-        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
         vm.expectEmit(true, true, true, true);
         emit KWENTALocked(TEST_USER_1, TEST_AMOUNT);
         conversion.lockAndConvert();
@@ -89,11 +91,11 @@ contract ConversionTest is Bootstrap {
     }
 
     function testLockAndConvertInsufficientKWENTA() public {
-        uint256 balance = KWENTAMock.balanceOf(TEST_USER_2);
+        uint256 balance = KWENTA.balanceOf(TEST_USER_2);
         assertEq(balance, 0);
 
         vm.startPrank(TEST_USER_2);
-        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
         vm.expectRevert(IConversion.InsufficientKWENTA.selector);
         conversion.lockAndConvert();
         vm.stopPrank();
@@ -252,8 +254,8 @@ contract ConversionTest is Bootstrap {
     function testVest() public {
         basicLock();
 
-        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXBefore = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
         uint256 claimedSNXBefore = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXBefore, 0);
         assertEq(contractSNXBefore, MINT_AMOUNT);
@@ -266,8 +268,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
 
-        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXAfter = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
         uint256 claimedSNXAfter = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXAfter, CONVERTED_SNX_AMOUNT / 2);
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
@@ -280,8 +282,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest(TEST_USER_1);
 
-        uint256 userSNXFinal = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXFinal = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXFinal = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXFinal = SNX.balanceOf(address(conversion));
         uint256 claimedSNXFinal = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXFinal, CONVERTED_SNX_AMOUNT);
         assertEq(contractSNXFinal, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
@@ -291,8 +293,8 @@ contract ConversionTest is Bootstrap {
     function testVestBasic() public {
         basicLock();
 
-        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXBefore = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
         uint256 claimedSNXBefore = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXBefore, 0);
         assertEq(contractSNXBefore, MINT_AMOUNT);
@@ -305,8 +307,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest();
 
-        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXAfter = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
         uint256 claimedSNXAfter = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXAfter, CONVERTED_SNX_AMOUNT / 2);
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
@@ -319,8 +321,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest();
 
-        uint256 userSNXFinal = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXFinal = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXFinal = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXFinal = SNX.balanceOf(address(conversion));
         uint256 claimedSNXFinal = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXFinal, CONVERTED_SNX_AMOUNT);
         assertEq(contractSNXFinal, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
@@ -330,8 +332,8 @@ contract ConversionTest is Bootstrap {
     function testVestBasicAndLockAndVestAgain() public {
         testVestBasic();
 
-        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXBefore = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
         uint256 claimedSNXBefore = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXBefore, CONVERTED_SNX_AMOUNT);
         assertEq(contractSNXBefore, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
@@ -342,8 +344,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest();
 
-        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXAfter = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
         uint256 claimedSNXAfter = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXAfter, CONVERTED_SNX_AMOUNT * 2);
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT * 2));
@@ -353,8 +355,8 @@ contract ConversionTest is Bootstrap {
     function testVestAfterWithdraw() public {
         basicLock();
 
-        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXBefore = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
         uint256 claimedSNXBefore = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXBefore, 0);
         assertEq(contractSNXBefore, MINT_AMOUNT);
@@ -367,8 +369,8 @@ contract ConversionTest is Bootstrap {
         vm.prank(TEST_USER_1);
         conversion.vest();
 
-        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXAfter = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
         uint256 claimedSNXAfter = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXAfter, CONVERTED_SNX_AMOUNT / 2);
         assertEq(contractSNXAfter, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2));
@@ -376,12 +378,11 @@ contract ConversionTest is Bootstrap {
 
         // withdraw
 
-        uint256 contractSNXBeforeWithdraw = SNXMock.balanceOf(address(conversion));
-        uint256 ownerSNXBeforeWithdraw = SNXMock.balanceOf(SYNTHETIX_TREASURY);
+        uint256 contractSNXBeforeWithdraw = SNX.balanceOf(address(conversion));
+        uint256 ownerSNXBeforeWithdraw = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(
             contractSNXBeforeWithdraw, MINT_AMOUNT - (CONVERTED_SNX_AMOUNT / 2)
         );
-        assertEq(ownerSNXBeforeWithdraw, 0);
 
         vm.warp(VESTING_START_TIME + WITHDRAW_START);
         vm.prank(SYNTHETIX_TREASURY);
@@ -390,17 +391,17 @@ contract ConversionTest is Bootstrap {
         vm.expectRevert();
         conversion.vest();
 
-        uint256 userSNXFinal = SNXMock.balanceOf(TEST_USER_1);
-        uint256 contractSNXFinal = SNXMock.balanceOf(address(conversion));
+        uint256 userSNXFinal = SNX.balanceOf(TEST_USER_1);
+        uint256 contractSNXFinal = SNX.balanceOf(address(conversion));
         uint256 claimedSNXFinal = conversion.claimedSNX(TEST_USER_1);
         assertEq(userSNXFinal, CONVERTED_SNX_AMOUNT / 2);
         assertEq(contractSNXFinal, 0);
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT / 2);
 
-        uint256 contractSNXAfterWithdraw = SNXMock.balanceOf(address(conversion));
-        uint256 ownerSNXAfterWithdraw = SNXMock.balanceOf(SYNTHETIX_TREASURY);
+        uint256 contractSNXAfterWithdraw = SNX.balanceOf(address(conversion));
+        uint256 ownerSNXAfterWithdraw = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfterWithdraw, 0);
-        assertEq(ownerSNXAfterWithdraw, MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2);
+        assertEq(ownerSNXAfterWithdraw, ownerSNXBeforeWithdraw + MINT_AMOUNT - CONVERTED_SNX_AMOUNT / 2);
     }
 
     function testVestEmit() public {
@@ -417,19 +418,18 @@ contract ConversionTest is Bootstrap {
     }
 
     function testWithdrawSNX() public {
-        uint256 contractSNXBefore = SNXMock.balanceOf(address(conversion));
-        uint256 ownerSNXBefore = SNXMock.balanceOf(SYNTHETIX_TREASURY);
+        uint256 contractSNXBefore = SNX.balanceOf(address(conversion));
+        uint256 ownerSNXBefore = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXBefore, MINT_AMOUNT);
-        assertEq(ownerSNXBefore, 0);
 
         vm.warp(VESTING_START_TIME + WITHDRAW_START);
         vm.prank(SYNTHETIX_TREASURY);
         conversion.withdrawSNX();
 
-        uint256 contractSNXAfter = SNXMock.balanceOf(address(conversion));
-        uint256 ownerSNXAfter = SNXMock.balanceOf(SYNTHETIX_TREASURY);
+        uint256 contractSNXAfter = SNX.balanceOf(address(conversion));
+        uint256 ownerSNXAfter = SNX.balanceOf(SYNTHETIX_TREASURY);
         assertEq(contractSNXAfter, 0);
-        assertEq(ownerSNXAfter, MINT_AMOUNT);
+        assertEq(ownerSNXAfter, ownerSNXBefore + MINT_AMOUNT);
     }
 
     function testWithdrawSNXOnlyOwner() public {
@@ -465,11 +465,11 @@ contract ConversionTest is Bootstrap {
 
     function testDeploymentAddressZero() public {
         vm.expectRevert(IConversion.AddressZero.selector);
-        bootstrapLocal.init(address(0), address(0));
+        bootstrapOptimism.deploySystem(address(0), address(0));
         vm.expectRevert(IConversion.AddressZero.selector);
-        bootstrapLocal.init(address(KWENTAMock), address(0));
+        bootstrapOptimism.deploySystem(address(KWENTAMock), address(0));
         vm.expectRevert(IConversion.AddressZero.selector);
-        bootstrapLocal.init(address(0), address(SNXMock));
+        bootstrapOptimism.deploySystem(address(0), address(SNXMock));
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -477,10 +477,17 @@ contract ConversionTest is Bootstrap {
     //////////////////////////////////////////////////////////////*/
 
     function basicLock() public {
-        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        mintKwenta(TEST_USER_1, TEST_AMOUNT);
         vm.startPrank(TEST_USER_1);
-        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        KWENTA.approve(address(conversion), TEST_AMOUNT);
         conversion.lockAndConvert();
         vm.stopPrank();
+    }
+
+    function mintKwenta(address user, uint256 amount) public {
+        /// @dev this is the KWENTA treasury
+        /// at the current block number it still has KWENTA
+        vm.prank(KWENTA_TREASURY);
+        KWENTA.transfer(user, amount);
     }
 }
