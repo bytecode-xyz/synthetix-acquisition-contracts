@@ -34,13 +34,6 @@ contract Bootstrap is Test, Constants {
         conversion = Conversion(conversionAddress);
     }
 
-    // function initializeOptimismGoerli() internal {
-    //     BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
-    //     (address conversionAddress) = bootstrap.init();
-
-    //     conversion = Conversion(conversionAddress);
-    // }
-
     // function initializeOptimism() internal {
     //     BootstrapOptimismGoerli bootstrap = new BootstrapOptimismGoerli();
     //     (address conversionAddress) = bootstrap.init();
@@ -48,7 +41,6 @@ contract Bootstrap is Test, Constants {
     //     conversion = Conversion(conversionAddress);
     // }
 
-    /// @dev add other networks here as needed (ex: Base, BaseGoerli)
 }
 
 contract BootstrapLocal is Setup {
@@ -66,13 +58,3 @@ contract BootstrapLocal is Setup {
 //         return conversionAddress;
 //     }
 // }
-
-// contract BootstrapOptimismGoerli is Setup, OptimismGoerliParameters {
-//     function init() public returns (address) {
-//         address conversionAddress = Setup.deploySystem();
-
-//         return conversionAddress;
-//     }
-// }
-
-// add other networks here as needed (ex: Base, BaseGoerli)
