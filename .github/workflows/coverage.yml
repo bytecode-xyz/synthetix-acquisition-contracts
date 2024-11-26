@@ -28,5 +28,5 @@ jobs:
 
             - name: Report Coverage
               run: |
-                forge coverage --report summary
-                forge coverage --report debug
+                forge coverage --fork-url ${{ secrets.OPTIMISM_RPC_URL }} --report summary
+                forge coverage --fork-url ${{ secrets.OPTIMISM_RPC_URL }} --report debug

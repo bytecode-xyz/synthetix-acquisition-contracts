@@ -34,5 +34,5 @@ jobs:
 
             - name: Test Project
               run: |
-                forge test -vvv
+                forge test --fork-url ${{ secrets.OPTIMISM_RPC_URL }} -vvv
               id: test
