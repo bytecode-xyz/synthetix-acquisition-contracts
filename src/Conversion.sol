@@ -16,8 +16,8 @@ contract Conversion is IConversion {
     /// @notice Fixed rate of 1:17 for KWENTA to SNX conversion
     uint256 public constant CONVERSION_RATE = 17;
 
-    /// @notice Vesting cliff duration in seconds (3 months)
-    uint256 public constant VESTING_CLIFF_DURATION = 90 days;
+    /// @notice Vesting lock duration in seconds (3 months)
+    uint256 public constant VESTING_LOCK_DURATION = 90 days;
 
     /// @notice Linear vesting duration in seconds (9 months)
     uint256 public constant LINEAR_VESTING_DURATION = 270 days;
@@ -27,17 +27,17 @@ contract Conversion is IConversion {
 
     /// @notice Global start time for vesting
     /// @notice Friday, November 15, 2024 12:00:00 AM (GMT)
-    /// @dev From this derive 3 months cliff 9 month linear vesting
+    /// @dev From this derive 3 months lock 9 month linear vesting
     uint256 public constant VESTING_START_TIME = 1_731_628_800;
 
     /// @notice Address of the Synthetix treasury
     address public constant SYNTHETIX_TREASURY =
         0xa5f7a39E55D7878bC5bd754eE5d6BD7a7662355b; //todo: change to actual address
 
-    /// @notice Time at which the cliff ends
-    /// @dev VESTING_START_TIME + VESTING_CLIFF_DURATION
+    /// @notice Time at which the lock ends
+    /// @dev VESTING_START_TIME + VESTING_LOCK_DURATION
     /// @dev initialized during construction
-    uint256 public immutable timeCliffEnds;
+    uint256 public immutable timeLockEnds;
 
     // CONTRACTS //////////////////////////////////////////
 
@@ -70,7 +70,7 @@ contract Conversion is IConversion {
         }
         KWENTA = IERC20(_kwenta);
         SNX = IERC20(_snx);
-        timeCliffEnds = VESTING_START_TIME + VESTING_CLIFF_DURATION;
+        timeLockEnds = VESTING_START_TIME + VESTING_LOCK_DURATION;
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -79,11 +79,11 @@ contract Conversion is IConversion {
 
     /// @inheritdoc IConversion
     function vestableAmount(address _account) public view returns (uint256) {
-        if (block.timestamp < timeCliffEnds) {
+        if (block.timestamp < timeLockEnds) {
             return 0;
         }
         uint256 vestableRemainder = (
-            owedSNX[_account] * (block.timestamp - timeCliffEnds)
+            owedSNX[_account] * (block.timestamp - timeLockEnds)
         ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
         if (vestableRemainder > owedSNX[_account]) {
             return owedSNX[_account];

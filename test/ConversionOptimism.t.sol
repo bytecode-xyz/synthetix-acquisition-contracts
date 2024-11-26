@@ -55,7 +55,7 @@ contract ConversionTestOptimism is Bootstrap {
 
     function testLockAndConvertAfterVestingDuration() public {
         vm.warp(
-            block.timestamp + VESTING_CLIFF_DURATION + LINEAR_VESTING_DURATION
+            block.timestamp + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
                 + 1
         );
 
@@ -101,13 +101,13 @@ contract ConversionTestOptimism is Bootstrap {
         vm.stopPrank();
     }
 
-    function testVestableAmountBeforeCliff() public {
+    function testVestableAmountBeforeLock() public {
         basicLock();
 
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
@@ -119,7 +119,7 @@ contract ConversionTestOptimism is Bootstrap {
     function testVestableAmountLinear() public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
@@ -128,21 +128,21 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / LINEAR_VESTING_DURATION);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 3
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 3);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -152,7 +152,7 @@ contract ConversionTestOptimism is Bootstrap {
     function testVestableAmountLinearFuzz(uint64 amount) public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
@@ -171,12 +171,12 @@ contract ConversionTestOptimism is Bootstrap {
     function testVestableAmountVest() public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -189,7 +189,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(vestableAmount, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -199,12 +199,12 @@ contract ConversionTestOptimism is Bootstrap {
     function testVestableAmountLockMore() public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -215,7 +215,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(vestableAmount, CONVERTED_SNX_AMOUNT);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -225,12 +225,12 @@ contract ConversionTestOptimism is Bootstrap {
     function testVestableAmountLockMoreAndVest() public {
         basicLock();
 
-        vm.warp(VESTING_START_TIME + VESTING_CLIFF_DURATION);
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
         uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
         assertEq(vestableAmount, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -244,7 +244,7 @@ contract ConversionTestOptimism is Bootstrap {
         conversion.vest(TEST_USER_1);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vestableAmount = conversion.vestableAmount(TEST_USER_1);
@@ -262,7 +262,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXBefore, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vm.prank(TEST_USER_1);
@@ -276,7 +276,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vm.prank(TEST_USER_1);
@@ -301,7 +301,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXBefore, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vm.prank(TEST_USER_1);
@@ -315,7 +315,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXAfter, CONVERTED_SNX_AMOUNT / 2);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION
         );
         vm.prank(TEST_USER_1);
@@ -363,7 +363,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXBefore, 0);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vm.prank(TEST_USER_1);
@@ -411,7 +411,7 @@ contract ConversionTestOptimism is Bootstrap {
         basicLock();
 
         vm.warp(
-            VESTING_START_TIME + VESTING_CLIFF_DURATION
+            VESTING_START_TIME + VESTING_LOCK_DURATION
                 + LINEAR_VESTING_DURATION / 2
         );
         vm.prank(TEST_USER_1);
