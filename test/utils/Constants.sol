@@ -4,7 +4,10 @@ pragma solidity 0.8.25;
 /// @title Contract for defining constants used in testing
 contract Constants {
     address internal constant SYNTHETIX_TREASURY =
-        0xa5f7a39E55D7878bC5bd754eE5d6BD7a7662355b; //todo: change to actual address
+        0xD25215758734dd3aDE497CE04De1c35820964126;
+    /// @dev this is for testing setup purposes
+    address public constant LARGEST_SNX_HOLDER =
+        0xa5f7a39E55D7878bC5bd754eE5d6BD7a7662355b;
     address internal constant KWENTA_TREASURY =
         0x82d2242257115351899894eF384f779b5ba8c695;
     address internal constant TEST_USER_1 = address(0x2);

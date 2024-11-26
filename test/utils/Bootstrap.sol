@@ -48,7 +48,7 @@ contract Bootstrap is Test, Constants {
         conversion = Conversion(conversionAddress);
         KWENTA = IERC20(kwenta);
         SNX = IERC20(snx);
-        vm.prank(SYNTHETIX_TREASURY);
+        vm.prank(LARGEST_SNX_HOLDER);
         SNX.transfer(conversionAddress, MINT_AMOUNT);
     }
 }

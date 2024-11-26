@@ -32,7 +32,7 @@ contract Conversion is IConversion {
 
     /// @notice Address of the Synthetix treasury
     address public constant SYNTHETIX_TREASURY =
-        0xa5f7a39E55D7878bC5bd754eE5d6BD7a7662355b; //todo: change to actual address
+        0xD25215758734dd3aDE497CE04De1c35820964126;
 
     /// @notice Time at which the lock ends
     /// @dev VESTING_START_TIME + VESTING_LOCK_DURATION
