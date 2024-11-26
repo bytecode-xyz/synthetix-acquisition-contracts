@@ -463,6 +463,15 @@ contract ConversionTest is Bootstrap {
         }
     }
 
+    function testDeploymentAddressZero() public {
+        vm.expectRevert(IConversion.AddressZero.selector);
+        bootstrapLocal.init(address(0), address(0));
+        vm.expectRevert(IConversion.AddressZero.selector);
+        bootstrapLocal.init(address(KWENTA), address(0));
+        vm.expectRevert(IConversion.AddressZero.selector);
+        bootstrapLocal.init(address(0), address(SNX));
+    }
+
     /*//////////////////////////////////////////////////////////////
                                 HELPERS
     //////////////////////////////////////////////////////////////*/

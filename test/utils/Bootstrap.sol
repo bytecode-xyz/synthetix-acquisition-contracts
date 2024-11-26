@@ -22,13 +22,14 @@ contract Bootstrap is Test, Constants {
     Conversion internal conversion;
     MockToken internal KWENTA;
     MockToken internal SNX;
+    BootstrapLocal internal bootstrapLocal;
 
     function initializeLocal() internal {
         KWENTA = new MockToken();
         SNX = new MockToken();
-        BootstrapLocal bootstrap = new BootstrapLocal();
+        bootstrapLocal = new BootstrapLocal();
         (address conversionAddress) =
-            bootstrap.init(address(KWENTA), address(SNX));
+            bootstrapLocal.init(address(KWENTA), address(SNX));
         SNX.transfer(conversionAddress, MINT_AMOUNT);
         conversion = Conversion(conversionAddress);
     }
