@@ -78,11 +78,7 @@ contract Conversion is IConversion {
     ///////////////////////////////////////////////////////////////*/
 
     /// @inheritdoc IConversion
-    function vestableAmount(address _account)
-        public
-        view
-        returns (uint256)
-    {
+    function vestableAmount(address _account) public view returns (uint256) {
         if (block.timestamp < timeCliffEnds) {
             return 0;
         }
