@@ -11,6 +11,8 @@ jobs:
             fail-fast: true
 
         runs-on: ubuntu-latest
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
         steps:
             - uses: actions/checkout@v3
               with:
