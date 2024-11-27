@@ -102,6 +102,9 @@ contract Conversion is IConversion {
         if (kwentaAmount == 0) {
             revert InsufficientKWENTA();
         }
+        if (SNX.balanceOf(address(this)) == 0) {
+            revert ZeroContractSNX();
+        }
 
         uint256 snxAmount = kwentaAmount * CONVERSION_RATE;
         owedSNX[msg.sender] += snxAmount;

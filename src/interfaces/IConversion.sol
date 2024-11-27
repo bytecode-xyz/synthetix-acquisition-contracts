@@ -61,4 +61,7 @@ interface IConversion {
 
     /// @notice thrown when caller is not the owner
     error Unauthorized();
+
+    /// @notice thrown when contract has no SNX
+    error ZeroContractSNX();
 }

@@ -3,6 +3,7 @@ pragma solidity 0.8.25;
 
 import {Bootstrap} from "test/utils/Bootstrap.sol";
 import {IConversion} from "src/interfaces/IConversion.sol";
+import {Conversion} from "src/Conversion.sol";
 
 contract ConversionTest is Bootstrap {
     function setUp() public {
@@ -49,6 +50,19 @@ contract ConversionTest is Bootstrap {
         assertEq(owedSNXAfter, CONVERTED_SNX_AMOUNT);
         assertEq(userKWENTAAfter, 0);
         assertEq(contractKWENTAAfter, TEST_AMOUNT);
+    }
+
+    function testLockAndConvertZeroContractSNX() public {
+        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        conversion = Conversion(
+            bootstrapLocal.init(address(KWENTAMock), address(SNXMock))
+        );
+
+        vm.startPrank(TEST_USER_1);
+        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        vm.expectRevert(IConversion.ZeroContractSNX.selector);
+        conversion.lockAndConvert();
+        vm.stopPrank();
     }
 
     function testLockAndConvertAfterVestingDuration() public {
