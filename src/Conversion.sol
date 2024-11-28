@@ -82,6 +82,9 @@ contract Conversion is IConversion {
         if (block.timestamp < timeLockEnds) {
             return 0;
         }
+        if (claimedSNX[_account] >= owedSNX[_account]) {
+            return 0;
+        }
         uint256 vestableRemainder = (
             owedSNX[_account] * (block.timestamp - timeLockEnds)
         ) / LINEAR_VESTING_DURATION - claimedSNX[_account];

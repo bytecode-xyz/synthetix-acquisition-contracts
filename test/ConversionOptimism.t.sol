@@ -323,6 +323,16 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT);
     }
 
+    function testVestBasicThenVestAgain() public {
+        testVestBasic();
+        vm.warp(block.timestamp + 30 days);
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        vm.prank(TEST_USER_1);
+        conversion.vest();
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        assertEq(userSNXAfter, userSNXBefore);
+    }
+
     function testVestBasicAndLockAndVestAgain() public {
         testVestBasic();
 
