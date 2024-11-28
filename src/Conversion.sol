@@ -3,7 +3,8 @@ pragma solidity 0.8.25;
 
 import {IConversion} from "./interfaces/IConversion.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {SafeERC20} from
+    "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title Kwenta Acquisition Token Conversion Contract
 /// @notice Responsible for converting KWENTA tokens to SNX at a fixed rate of 1:17
@@ -112,7 +113,9 @@ contract Conversion is IConversion {
 
         uint256 snxAmount = kwentaAmount * CONVERSION_RATE;
         owedSNX[msg.sender] += snxAmount;
-        SafeERC20.safeTransferFrom(KWENTA, msg.sender, address(this), kwentaAmount);
+        SafeERC20.safeTransferFrom(
+            KWENTA, msg.sender, address(this), kwentaAmount
+        );
 
         emit KWENTALocked(msg.sender, kwentaAmount);
     }
