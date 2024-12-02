@@ -323,7 +323,7 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT);
     }
 
-    function testVestExploitVestPartialWaitVestFull () public {
+    function testVestExploitVestPartialWaitVestFull() public {
         basicLock();
 
         vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
@@ -341,7 +341,8 @@ contract ConversionTestOptimism is Bootstrap {
         conversion.vest(TEST_USER_1);
 
         vm.warp(
-            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION + LINEAR_VESTING_DURATION / 2
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
+                + LINEAR_VESTING_DURATION / 2
         );
 
         vestableAmount = conversion.vestableAmount(TEST_USER_1);

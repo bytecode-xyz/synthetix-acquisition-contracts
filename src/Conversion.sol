@@ -92,7 +92,8 @@ contract Conversion is IConversion {
         if (elapsed >= LINEAR_VESTING_DURATION) {
             vestable = owedSNX[_account] - claimedSNX[_account];
         } else {
-            vestable = (owedSNX[_account] * elapsed) / LINEAR_VESTING_DURATION - claimedSNX[_account];
+            vestable = (owedSNX[_account] * elapsed) / LINEAR_VESTING_DURATION
+                - claimedSNX[_account];
         }
         return vestable;
     }
