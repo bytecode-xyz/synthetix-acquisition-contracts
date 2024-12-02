@@ -130,6 +130,9 @@ contract Conversion is IConversion {
     function vest(address to) public returns (uint256 amountVested) {
         address caller = msg.sender;
         amountVested = vestableAmount(caller);
+        if (amountVested == 0) {
+            revert NoVestableAmount();
+        }
         claimedSNX[caller] += amountVested;
         SafeERC20.safeTransfer(SNX, to, amountVested);
         emit SNXVested(caller, to, amountVested);

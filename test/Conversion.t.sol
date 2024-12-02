@@ -369,10 +369,11 @@ contract ConversionTest is Bootstrap {
         assertEq(SNXMock.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
     }
 
-    function testVestBasicThenVestAgain() public {
+    function testVestBasicThenVestAgainWhenFullyVested() public {
         testVestBasic();
         uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
         vm.prank(TEST_USER_1);
+        vm.expectRevert(IConversion.NoVestableAmount.selector);
         conversion.vest();
         uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
         assertEq(userSNXAfter, userSNXBefore);
@@ -383,11 +384,12 @@ contract ConversionTest is Bootstrap {
         assertEq(SNXMock.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
     }
 
-    function testVestBasicThenWaitAndVestAgain() public {
+    function testVestBasicThenWaitAndVestAgainWhenFullyVested() public {
         testVestBasic();
         vm.warp(block.timestamp + 30 days);
         uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
         vm.prank(TEST_USER_1);
+        vm.expectRevert(IConversion.NoVestableAmount.selector);
         conversion.vest();
         uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
         assertEq(userSNXAfter, userSNXBefore);

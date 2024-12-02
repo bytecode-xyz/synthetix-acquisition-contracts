@@ -64,4 +64,7 @@ interface IConversion {
 
     /// @notice thrown when contract has no SNX
     error ZeroContractSNX();
+
+    /// @notice thrown when no SNX can be vested
+    error NoVestableAmount();
 }
