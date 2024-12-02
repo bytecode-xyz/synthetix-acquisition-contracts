@@ -323,7 +323,54 @@ contract ConversionTestOptimism is Bootstrap {
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT);
     }
 
+    function testVestExploitVestPartialWaitVestFull () public {
+        basicLock();
+
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+
+        vm.warp(
+            VESTING_START_TIME + VESTING_LOCK_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
+
+        vm.prank(TEST_USER_1);
+        conversion.vest(TEST_USER_1);
+
+        vm.warp(
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION + LINEAR_VESTING_DURATION / 2
+        );
+
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
+
+        vm.prank(TEST_USER_1);
+        conversion.vest(TEST_USER_1);
+
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNX.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+    }
+
     function testVestBasicThenVestAgain() public {
+        testVestBasic();
+        uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
+        vm.prank(TEST_USER_1);
+        conversion.vest();
+        uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
+        assertEq(userSNXAfter, userSNXBefore);
+
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNX.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+    }
+
+    function testVestBasicThenWaitAndVestAgain() public {
         testVestBasic();
         vm.warp(block.timestamp + 30 days);
         uint256 userSNXBefore = SNX.balanceOf(TEST_USER_1);
@@ -331,6 +378,11 @@ contract ConversionTestOptimism is Bootstrap {
         conversion.vest();
         uint256 userSNXAfter = SNX.balanceOf(TEST_USER_1);
         assertEq(userSNXAfter, userSNXBefore);
+
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNX.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
     }
 
     function testVestBasicAndLockAndVestAgain() public {

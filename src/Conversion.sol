@@ -87,14 +87,14 @@ contract Conversion is IConversion {
         if (claimedSNX[_account] >= owedSNX[_account]) {
             return 0;
         }
-        uint256 vestableRemainder = (
-            owedSNX[_account] * (block.timestamp - timeLockEnds)
-        ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
-        if (vestableRemainder > owedSNX[_account]) {
-            return owedSNX[_account];
+        uint256 vestable;
+        uint256 elapsed = block.timestamp - timeLockEnds;
+        if (elapsed >= LINEAR_VESTING_DURATION) {
+            vestable = owedSNX[_account] - claimedSNX[_account];
         } else {
-            return vestableRemainder;
+            vestable = (owedSNX[_account] * elapsed) / LINEAR_VESTING_DURATION - claimedSNX[_account];
         }
+        return vestable;
     }
 
     /*///////////////////////////////////////////////////////////////
