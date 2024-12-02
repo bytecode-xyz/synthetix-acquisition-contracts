@@ -3,6 +3,7 @@ pragma solidity 0.8.25;
 
 import {Bootstrap} from "test/utils/Bootstrap.sol";
 import {IConversion} from "src/interfaces/IConversion.sol";
+import {Conversion} from "src/Conversion.sol";
 
 contract ConversionTest is Bootstrap {
     function setUp() public {
@@ -49,6 +50,19 @@ contract ConversionTest is Bootstrap {
         assertEq(owedSNXAfter, CONVERTED_SNX_AMOUNT);
         assertEq(userKWENTAAfter, 0);
         assertEq(contractKWENTAAfter, TEST_AMOUNT);
+    }
+
+    function testLockAndConvertZeroContractSNX() public {
+        KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
+        conversion = Conversion(
+            bootstrapLocal.init(address(KWENTAMock), address(SNXMock))
+        );
+
+        vm.startPrank(TEST_USER_1);
+        KWENTAMock.approve(address(conversion), TEST_AMOUNT);
+        vm.expectRevert(IConversion.ZeroContractSNX.selector);
+        conversion.lockAndConvert();
+        vm.stopPrank();
     }
 
     function testLockAndConvertAfterVestingDuration() public {
@@ -319,6 +333,69 @@ contract ConversionTest is Bootstrap {
         assertEq(userSNXFinal, CONVERTED_SNX_AMOUNT);
         assertEq(contractSNXFinal, MINT_AMOUNT - CONVERTED_SNX_AMOUNT);
         assertEq(claimedSNXFinal, CONVERTED_SNX_AMOUNT);
+    }
+
+    function testVestExploitVestPartialWaitVestFull() public {
+        basicLock();
+
+        vm.warp(VESTING_START_TIME + VESTING_LOCK_DURATION);
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+
+        vm.warp(
+            VESTING_START_TIME + VESTING_LOCK_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
+
+        vm.prank(TEST_USER_1);
+        conversion.vest(TEST_USER_1);
+
+        vm.warp(
+            VESTING_START_TIME + VESTING_LOCK_DURATION + LINEAR_VESTING_DURATION
+                + LINEAR_VESTING_DURATION / 2
+        );
+
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, CONVERTED_SNX_AMOUNT / 2);
+
+        vm.prank(TEST_USER_1);
+        conversion.vest(TEST_USER_1);
+
+        vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNXMock.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+    }
+
+    function testVestBasicThenVestAgain() public {
+        testVestBasic();
+        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
+        vm.prank(TEST_USER_1);
+        conversion.vest();
+        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
+        assertEq(userSNXAfter, userSNXBefore);
+
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNXMock.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+    }
+
+    function testVestBasicThenWaitAndVestAgain() public {
+        testVestBasic();
+        vm.warp(block.timestamp + 30 days);
+        uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
+        vm.prank(TEST_USER_1);
+        conversion.vest();
+        uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
+        assertEq(userSNXAfter, userSNXBefore);
+
+        uint256 vestableAmount = conversion.vestableAmount(TEST_USER_1);
+        assertEq(vestableAmount, 0);
+        assertEq(conversion.claimedSNX(TEST_USER_1), CONVERTED_SNX_AMOUNT);
+        assertEq(SNXMock.balanceOf(TEST_USER_1), CONVERTED_SNX_AMOUNT);
     }
 
     function testVestBasicAndLockAndVestAgain() public {

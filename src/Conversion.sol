@@ -3,6 +3,8 @@ pragma solidity 0.8.25;
 
 import {IConversion} from "./interfaces/IConversion.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {SafeERC20} from
+    "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /// @title Kwenta Acquisition Token Conversion Contract
 /// @notice Responsible for converting KWENTA tokens to SNX at a fixed rate of 1:17
@@ -82,14 +84,18 @@ contract Conversion is IConversion {
         if (block.timestamp < timeLockEnds) {
             return 0;
         }
-        uint256 vestableRemainder = (
-            owedSNX[_account] * (block.timestamp - timeLockEnds)
-        ) / LINEAR_VESTING_DURATION - claimedSNX[_account];
-        if (vestableRemainder > owedSNX[_account]) {
-            return owedSNX[_account];
-        } else {
-            return vestableRemainder;
+        if (claimedSNX[_account] >= owedSNX[_account]) {
+            return 0;
         }
+        uint256 vestable;
+        uint256 elapsed = block.timestamp - timeLockEnds;
+        if (elapsed >= LINEAR_VESTING_DURATION) {
+            vestable = owedSNX[_account] - claimedSNX[_account];
+        } else {
+            vestable = (owedSNX[_account] * elapsed) / LINEAR_VESTING_DURATION
+                - claimedSNX[_account];
+        }
+        return vestable;
     }
 
     /*///////////////////////////////////////////////////////////////
@@ -102,10 +108,15 @@ contract Conversion is IConversion {
         if (kwentaAmount == 0) {
             revert InsufficientKWENTA();
         }
+        if (SNX.balanceOf(address(this)) == 0) {
+            revert ZeroContractSNX();
+        }
 
         uint256 snxAmount = kwentaAmount * CONVERSION_RATE;
         owedSNX[msg.sender] += snxAmount;
-        KWENTA.transferFrom(msg.sender, address(this), kwentaAmount);
+        SafeERC20.safeTransferFrom(
+            KWENTA, msg.sender, address(this), kwentaAmount
+        );
 
         emit KWENTALocked(msg.sender, kwentaAmount);
     }
@@ -120,7 +131,7 @@ contract Conversion is IConversion {
         address caller = msg.sender;
         amountVested = vestableAmount(caller);
         claimedSNX[caller] += amountVested;
-        SNX.transfer(to, amountVested);
+        SafeERC20.safeTransfer(SNX, to, amountVested);
         emit SNXVested(caller, to, amountVested);
     }
 
@@ -132,6 +143,6 @@ contract Conversion is IConversion {
         if (block.timestamp < VESTING_START_TIME + WITHDRAW_START) {
             revert WithdrawalStartTimeNotReached();
         }
-        SNX.transfer(msg.sender, SNX.balanceOf(address(this)));
+        SafeERC20.safeTransfer(SNX, msg.sender, SNX.balanceOf(address(this)));
     }
 }
