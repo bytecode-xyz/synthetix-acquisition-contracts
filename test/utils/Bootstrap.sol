@@ -3,11 +3,11 @@ pragma solidity 0.8.25;
 
 import {console2} from "lib/forge-std/src/console2.sol";
 import {
-    Conversion,
+    KwentaConversion,
     OptimismParameters,
     Setup,
     DeployOptimism
-} from "script/Deploy.s.sol";
+} from "script/DeployKwenta.s.sol";
 import {Test} from "lib/forge-std/src/Test.sol";
 import {MockToken} from "test/utils/MockToken.sol";
 import {Constants} from "./Constants.sol";
@@ -21,7 +21,7 @@ contract Bootstrap is Test, Constants {
     event KWENTALocked(address indexed from, uint256 value);
     event SNXVested(address indexed from, address indexed to, uint256 value);
 
-    Conversion internal conversion;
+    KwentaConversion internal conversion;
     MockToken internal KWENTAMock;
     MockToken internal SNXMock;
     IERC20 internal KWENTA;
@@ -36,7 +36,7 @@ contract Bootstrap is Test, Constants {
         (address conversionAddress) =
             bootstrapLocal.init(address(KWENTAMock), address(SNXMock));
         SNXMock.transfer(conversionAddress, MINT_AMOUNT);
-        conversion = Conversion(conversionAddress);
+        conversion = KwentaConversion(conversionAddress);
     }
 
     function initializeOptimism() internal {
@@ -45,7 +45,7 @@ contract Bootstrap is Test, Constants {
         (address conversionAddress, address kwenta, address snx) =
             bootstrapOptimism.init();
 
-        conversion = Conversion(conversionAddress);
+        conversion = KwentaConversion(conversionAddress);
         KWENTA = IERC20(kwenta);
         SNX = IERC20(snx);
         vm.prank(LARGEST_SNX_HOLDER);

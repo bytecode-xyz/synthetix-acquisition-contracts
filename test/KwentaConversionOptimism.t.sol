@@ -4,7 +4,7 @@ pragma solidity 0.8.25;
 import {Bootstrap} from "test/utils/Bootstrap.sol";
 import {IConversion} from "src/interfaces/IConversion.sol";
 
-contract ConversionTestOptimism is Bootstrap {
+contract KwentaConversionTestOptimism is Bootstrap {
     function setUp() public {
         initializeOptimism();
         /// @dev warp ahead of the vesting start time to simulate deployment conditions

@@ -3,7 +3,7 @@ pragma solidity 0.8.25;
 
 import {OptimismParameters} from "./utils/parameters/OptimismParameters.sol";
 import {Script} from "lib/forge-std/src/Script.sol";
-import {Conversion} from "src/Conversion.sol";
+import {KwentaConversion} from "src/KwentaConversion.sol";
 
 /// @title Kwenta deployment script
 /// @author JaredBorders (jaredborders@pm.me)
@@ -12,7 +12,7 @@ contract Setup is Script {
         public
         returns (address)
     {
-        Conversion conversion = new Conversion(_kwenta, _snx);
+        KwentaConversion conversion = new KwentaConversion(_kwenta, _snx);
         return address(conversion);
     }
 }

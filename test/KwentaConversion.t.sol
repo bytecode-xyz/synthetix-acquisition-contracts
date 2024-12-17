@@ -3,9 +3,9 @@ pragma solidity 0.8.25;
 
 import {Bootstrap} from "test/utils/Bootstrap.sol";
 import {IConversion} from "src/interfaces/IConversion.sol";
-import {Conversion} from "src/Conversion.sol";
+import {KwentaConversion} from "src/KwentaConversion.sol";
 
-contract ConversionTest is Bootstrap {
+contract KwentaConversionTest is Bootstrap {
     function setUp() public {
         initializeLocal();
         /// @dev warp ahead of the vesting start time to simulate deployment conditions
@@ -54,7 +54,7 @@ contract ConversionTest is Bootstrap {
 
     function testLockAndConvertZeroContractSNX() public {
         KWENTAMock.mint(TEST_USER_1, TEST_AMOUNT);
-        conversion = Conversion(
+        conversion = KwentaConversion(
             bootstrapLocal.init(address(KWENTAMock), address(SNXMock))
         );
 
