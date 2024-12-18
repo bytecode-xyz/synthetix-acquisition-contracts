@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {Bootstrap} from "test/utils/Bootstrap.sol";
+import {Bootstrap} from "test/KwentaConversionTestSuite/utils/Bootstrap.sol";
 import {IKwentaConversion} from "src/interfaces/IKwentaConversion.sol";
 import {KwentaConversion} from "src/KwentaConversion.sol";
 
