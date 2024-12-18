@@ -9,7 +9,7 @@ import {SafeERC20} from
 /// @title TLX Acquisition Token Conversion Contract
 /// @notice Responsible for converting TLX tokens to SNX at a fixed rate of 18:1
 /// @author Jeremy Chiaramonte (jeremy@bytecode.llc)
-/// @author Andrew Chiaramonte (andrewc@kwenta.io)
+/// @author Andrew Chiaramonte (andrewc@definative.xyz)
 contract TLXConversion is ITLXConversion {
     /*//////////////////////////////////////////////////////////////
                           CONSTANTS/IMMUTABLES

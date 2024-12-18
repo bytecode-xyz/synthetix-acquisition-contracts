@@ -9,7 +9,7 @@ import {SafeERC20} from
 /// @title Kwenta Acquisition Token Conversion Contract
 /// @notice Responsible for converting KWENTA tokens to SNX at a fixed rate of 1:17
 /// @author Jeremy Chiaramonte (jeremy@bytecode.llc)
-/// @author Andrew Chiaramonte (andrewc@kwenta.io)
+/// @author Andrew Chiaramonte (andrew@definative.xyz)
 contract KwentaConversion is IKwentaConversion {
     /*//////////////////////////////////////////////////////////////
                           CONSTANTS/IMMUTABLES
