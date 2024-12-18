@@ -114,9 +114,7 @@ contract TLXConversion is ITLXConversion {
 
         uint256 snxAmount = tlxAmount / CONVERSION_RATE;
         owedSNX[msg.sender] += snxAmount;
-        SafeERC20.safeTransferFrom(
-            TLX, msg.sender, address(this), tlxAmount
-        );
+        SafeERC20.safeTransferFrom(TLX, msg.sender, address(this), tlxAmount);
 
         emit TLXLocked(msg.sender, tlxAmount);
     }

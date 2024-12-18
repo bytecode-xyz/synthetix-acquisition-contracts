@@ -503,7 +503,9 @@ contract KwentaConversionTestOptimism is Bootstrap {
     function testWithdrawSNXWithdrawalStartTimeNotReached() public {
         vm.warp(VESTING_START_TIME + WITHDRAW_START - 1);
         vm.prank(SYNTHETIX_TREASURY);
-        vm.expectRevert(IKwentaConversion.WithdrawalStartTimeNotReached.selector);
+        vm.expectRevert(
+            IKwentaConversion.WithdrawalStartTimeNotReached.selector
+        );
         conversion.withdrawSNX();
 
         vm.warp(block.timestamp + 1);
@@ -517,7 +519,9 @@ contract KwentaConversionTestOptimism is Bootstrap {
         vm.warp(VESTING_START_TIME + amount);
         if (amount < WITHDRAW_START) {
             vm.prank(SYNTHETIX_TREASURY);
-            vm.expectRevert(IKwentaConversion.WithdrawalStartTimeNotReached.selector);
+            vm.expectRevert(
+                IKwentaConversion.WithdrawalStartTimeNotReached.selector
+            );
             conversion.withdrawSNX();
         } else {
             vm.prank(SYNTHETIX_TREASURY);
