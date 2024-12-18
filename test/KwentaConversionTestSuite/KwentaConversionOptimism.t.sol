@@ -13,7 +13,7 @@ contract KwentaConversionTestOptimism is Bootstrap {
     }
 
     function testConversionRateFixed17to1(uint256 amount) public {
-        vm.assume(amount <= type(uint256).max / 17);
+        vm.assume(amount <= type(uint256).max / CONVERSION_RATE);
         /// @dev this is for setup purposes
         vm.assume(amount <= KWENTA.balanceOf(KWENTA_TREASURY));
         vm.assume(amount > 0);
@@ -27,7 +27,7 @@ contract KwentaConversionTestOptimism is Bootstrap {
         vm.stopPrank();
 
         uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
-        uint256 expectedOwedSNX = amount * 17;
+        uint256 expectedOwedSNX = amount * CONVERSION_RATE;
         assertEq(owedSNXAfter, expectedOwedSNX);
     }
 

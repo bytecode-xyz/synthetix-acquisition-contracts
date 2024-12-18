@@ -25,7 +25,7 @@ contract TLXConversionTest is Bootstrap {
         vm.stopPrank();
 
         uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
-        uint256 expectedOwedSNX = amount / 18;
+        uint256 expectedOwedSNX = amount / CONVERSION_RATE;
         assertEq(owedSNXAfter, expectedOwedSNX);
     }
 
