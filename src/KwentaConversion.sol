@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {IConversion} from "./interfaces/IConversion.sol";
+import {IKwentaConversion} from "./interfaces/IKwentaConversion.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from
     "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -10,7 +10,7 @@ import {SafeERC20} from
 /// @notice Responsible for converting KWENTA tokens to SNX at a fixed rate of 1:17
 /// @author Jeremy Chiaramonte (jeremy@bytecode.llc)
 /// @author Andrew Chiaramonte (andrewc@kwenta.io)
-contract KwentaConversion is IConversion {
+contract KwentaConversion is IKwentaConversion {
     /*//////////////////////////////////////////////////////////////
                           CONSTANTS/IMMUTABLES
     //////////////////////////////////////////////////////////////*/
@@ -79,7 +79,7 @@ contract KwentaConversion is IConversion {
                                 VIEWS
     ///////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc IKwentaConversion
     function vestableAmount(address _account) public view returns (uint256) {
         if (block.timestamp < timeLockEnds) {
             return 0;
@@ -102,7 +102,7 @@ contract KwentaConversion is IConversion {
                             MUTATIVE FUNCTIONS
     ///////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc IKwentaConversion
     function lockAndConvert() public {
         uint256 kwentaAmount = KWENTA.balanceOf(msg.sender);
         if (kwentaAmount == 0) {
@@ -121,12 +121,12 @@ contract KwentaConversion is IConversion {
         emit KWENTALocked(msg.sender, kwentaAmount);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc IKwentaConversion
     function vest() public returns (uint256) {
         return vest(msg.sender);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc IKwentaConversion
     function vest(address to) public returns (uint256 amountVested) {
         address caller = msg.sender;
         amountVested = vestableAmount(caller);
@@ -138,7 +138,7 @@ contract KwentaConversion is IConversion {
         emit SNXVested(caller, to, amountVested);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc IKwentaConversion
     function withdrawSNX() public {
         if (msg.sender != SYNTHETIX_TREASURY) {
             revert Unauthorized();
