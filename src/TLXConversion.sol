@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {IConversion} from "./interfaces/IConversion.sol";
+import {ITLXConversion} from "./interfaces/ITLXConversion.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from
     "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -10,7 +10,7 @@ import {SafeERC20} from
 /// @notice Responsible for converting TLX tokens to SNX at a fixed rate of 18:1
 /// @author Jeremy Chiaramonte (jeremy@bytecode.llc)
 /// @author Andrew Chiaramonte (andrewc@kwenta.io)
-contract TLXConversion is IConversion {
+contract TLXConversion is ITLXConversion {
     /*//////////////////////////////////////////////////////////////
                           CONSTANTS/IMMUTABLES
     //////////////////////////////////////////////////////////////*/
@@ -28,9 +28,9 @@ contract TLXConversion is IConversion {
     uint256 public constant WITHDRAW_START = 730 days;
 
     /// @notice Global start time for vesting
-    /// @notice Sunday, January 5, 2025 12:00:00 AM (GMT)
+    /// @notice Thursday, December 5, 2024 12:00:00 AM (GMT)
     /// @dev From this derive 1 month lock 4 month linear vesting
-    uint256 public constant VESTING_START_TIME = 1736035200;
+    uint256 public constant VESTING_START_TIME = 1_733_356_800;
 
     /// @notice Address of the Synthetix treasury
     address public constant SYNTHETIX_TREASURY =
@@ -79,7 +79,7 @@ contract TLXConversion is IConversion {
                                 VIEWS
     ///////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc ITLXConversion
     function vestableAmount(address _account) public view returns (uint256) {
         if (block.timestamp < timeLockEnds) {
             return 0;
@@ -102,11 +102,11 @@ contract TLXConversion is IConversion {
                             MUTATIVE FUNCTIONS
     ///////////////////////////////////////////////////////////////*/
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc ITLXConversion
     function lockAndConvert() public {
         uint256 tlxAmount = TLX.balanceOf(msg.sender);
         if (tlxAmount == 0) {
-            revert InsufficientKWENTA();
+            revert InsufficientTLX();
         }
         if (SNX.balanceOf(address(this)) == 0) {
             revert ZeroContractSNX();
@@ -118,15 +118,15 @@ contract TLXConversion is IConversion {
             TLX, msg.sender, address(this), tlxAmount
         );
 
-        emit KWENTALocked(msg.sender, tlxAmount);
+        emit TLXLocked(msg.sender, tlxAmount);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc ITLXConversion
     function vest() public returns (uint256) {
         return vest(msg.sender);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc ITLXConversion
     function vest(address to) public returns (uint256 amountVested) {
         address caller = msg.sender;
         amountVested = vestableAmount(caller);
@@ -138,7 +138,7 @@ contract TLXConversion is IConversion {
         emit SNXVested(caller, to, amountVested);
     }
 
-    /// @inheritdoc IConversion
+    /// @inheritdoc ITLXConversion
     function withdrawSNX() public {
         if (msg.sender != SYNTHETIX_TREASURY) {
             revert Unauthorized();
