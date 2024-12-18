@@ -14,7 +14,8 @@ contract Constants {
     address internal constant TEST_USER_2 = address(0x3);
     uint256 internal constant TEST_AMOUNT = 1000 * 10 ** 18;
     uint256 internal constant CONVERSION_RATE = 17;
-    uint256 internal constant CONVERTED_SNX_AMOUNT = TEST_AMOUNT * CONVERSION_RATE;
+    uint256 internal constant CONVERTED_SNX_AMOUNT =
+        TEST_AMOUNT * CONVERSION_RATE;
     uint256 internal constant VESTING_LOCK_DURATION = 90 days;
     uint256 internal constant VESTING_START_TIME = 1_731_628_800;
     uint256 internal constant WITHDRAW_START = 730 days;

@@ -515,9 +515,7 @@ contract TLXConversionTest is Bootstrap {
     function testWithdrawSNXWithdrawalStartTimeNotReached() public {
         vm.warp(VESTING_START_TIME + WITHDRAW_START - 1);
         vm.prank(SYNTHETIX_TREASURY);
-        vm.expectRevert(
-            ITLXConversion.WithdrawalStartTimeNotReached.selector
-        );
+        vm.expectRevert(ITLXConversion.WithdrawalStartTimeNotReached.selector);
         conversion.withdrawSNX();
 
         vm.warp(block.timestamp + 1);
