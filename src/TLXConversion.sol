@@ -81,7 +81,7 @@ contract TLXConversion is ITLXConversion {
 
     /// @inheritdoc ITLXConversion
     function vestableAmount(address _account) public view returns (uint256) {
-        if (block.timestamp < timeLockEnds) {
+        if (block.timestamp <= timeLockEnds) {
             return 0;
         }
         if (claimedSNX[_account] >= owedSNX[_account]) {
