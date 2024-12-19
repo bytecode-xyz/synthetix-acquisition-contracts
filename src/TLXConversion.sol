@@ -19,7 +19,7 @@ contract TLXConversion is ITLXConversion {
     uint256 public constant CONVERSION_RATE = 18;
 
     /// @notice Vesting lock duration in seconds (1 month)
-    uint256 public constant VESTING_LOCK_DURATION = 30 days;
+    uint256 public constant VESTING_LOCK_DURATION = 31 days;
 
     /// @notice Linear vesting duration in seconds (4 month)
     uint256 public constant LINEAR_VESTING_DURATION = 120 days;
