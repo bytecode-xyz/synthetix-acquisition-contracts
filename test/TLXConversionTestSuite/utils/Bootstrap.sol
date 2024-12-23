@@ -20,6 +20,7 @@ contract Bootstrap is Test, Constants {
     /// @dev for testing
     event TLXLocked(address indexed from, uint256 value);
     event SNXVested(address indexed from, address indexed to, uint256 value);
+    event SNXWithdrawn(address indexed to, uint256 value);
 
     TLXConversion internal conversion;
     MockToken internal TLXMock;

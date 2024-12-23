@@ -144,6 +144,8 @@ contract TLXConversion is ITLXConversion {
         if (block.timestamp < VESTING_START_TIME + WITHDRAW_START) {
             revert WithdrawalStartTimeNotReached();
         }
-        SafeERC20.safeTransfer(SNX, msg.sender, SNX.balanceOf(address(this)));
+        uint256 balance = SNX.balanceOf(address(this));
+        SafeERC20.safeTransfer(SNX, msg.sender, balance);
+        emit SNXWithdrawn(SYNTHETIX_TREASURY, balance);
     }
 }
