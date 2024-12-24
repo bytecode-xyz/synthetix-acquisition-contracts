@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.25;
 
-import {Bootstrap} from "test/utils/Bootstrap.sol";
-import {IConversion} from "src/interfaces/IConversion.sol";
+import {Bootstrap} from "test/KwentaConversionTestSuite/utils/Bootstrap.sol";
+import {IKwentaConversion} from "src/interfaces/IKwentaConversion.sol";
 import {KwentaConversion} from "src/KwentaConversion.sol";
 
 contract KwentaConversionTest is Bootstrap {
@@ -14,7 +14,7 @@ contract KwentaConversionTest is Bootstrap {
     }
 
     function testConversionRateFixed17to1(uint256 amount) public {
-        vm.assume(amount <= type(uint256).max / 17);
+        vm.assume(amount <= type(uint256).max / CONVERSION_RATE);
         vm.assume(amount > 0);
         KWENTAMock.mint(TEST_USER_1, amount);
         uint256 owedSNXBefore = conversion.owedSNX(TEST_USER_1);
@@ -26,7 +26,7 @@ contract KwentaConversionTest is Bootstrap {
         vm.stopPrank();
 
         uint256 owedSNXAfter = conversion.owedSNX(TEST_USER_1);
-        uint256 expectedOwedSNX = amount * 17;
+        uint256 expectedOwedSNX = amount * CONVERSION_RATE;
         assertEq(owedSNXAfter, expectedOwedSNX);
     }
 
@@ -60,7 +60,7 @@ contract KwentaConversionTest is Bootstrap {
 
         vm.startPrank(TEST_USER_1);
         KWENTAMock.approve(address(conversion), TEST_AMOUNT);
-        vm.expectRevert(IConversion.ZeroContractSNX.selector);
+        vm.expectRevert(IKwentaConversion.ZeroContractSNX.selector);
         conversion.lockAndConvert();
         vm.stopPrank();
     }
@@ -108,7 +108,7 @@ contract KwentaConversionTest is Bootstrap {
 
         vm.startPrank(TEST_USER_2);
         KWENTAMock.approve(address(conversion), TEST_AMOUNT);
-        vm.expectRevert(IConversion.InsufficientKWENTA.selector);
+        vm.expectRevert(IKwentaConversion.InsufficientKWENTA.selector);
         conversion.lockAndConvert();
         vm.stopPrank();
     }
@@ -373,7 +373,7 @@ contract KwentaConversionTest is Bootstrap {
         testVestBasic();
         uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
         vm.prank(TEST_USER_1);
-        vm.expectRevert(IConversion.NoVestableAmount.selector);
+        vm.expectRevert(IKwentaConversion.NoVestableAmount.selector);
         conversion.vest();
         uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
         assertEq(userSNXAfter, userSNXBefore);
@@ -389,7 +389,7 @@ contract KwentaConversionTest is Bootstrap {
         vm.warp(block.timestamp + 30 days);
         uint256 userSNXBefore = SNXMock.balanceOf(TEST_USER_1);
         vm.prank(TEST_USER_1);
-        vm.expectRevert(IConversion.NoVestableAmount.selector);
+        vm.expectRevert(IKwentaConversion.NoVestableAmount.selector);
         conversion.vest();
         uint256 userSNXAfter = SNXMock.balanceOf(TEST_USER_1);
         assertEq(userSNXAfter, userSNXBefore);
@@ -509,14 +509,16 @@ contract KwentaConversionTest is Bootstrap {
 
     function testWithdrawSNXOnlyOwner() public {
         vm.prank(TEST_USER_1);
-        vm.expectRevert(IConversion.Unauthorized.selector);
+        vm.expectRevert(IKwentaConversion.Unauthorized.selector);
         conversion.withdrawSNX();
     }
 
     function testWithdrawSNXWithdrawalStartTimeNotReached() public {
         vm.warp(VESTING_START_TIME + WITHDRAW_START - 1);
         vm.prank(SYNTHETIX_TREASURY);
-        vm.expectRevert(IConversion.WithdrawalStartTimeNotReached.selector);
+        vm.expectRevert(
+            IKwentaConversion.WithdrawalStartTimeNotReached.selector
+        );
         conversion.withdrawSNX();
 
         vm.warp(block.timestamp + 1);
@@ -530,7 +532,9 @@ contract KwentaConversionTest is Bootstrap {
         vm.warp(VESTING_START_TIME + amount);
         if (amount < WITHDRAW_START) {
             vm.prank(SYNTHETIX_TREASURY);
-            vm.expectRevert(IConversion.WithdrawalStartTimeNotReached.selector);
+            vm.expectRevert(
+                IKwentaConversion.WithdrawalStartTimeNotReached.selector
+            );
             conversion.withdrawSNX();
         } else {
             vm.prank(SYNTHETIX_TREASURY);
@@ -539,11 +543,11 @@ contract KwentaConversionTest is Bootstrap {
     }
 
     function testDeploymentAddressZero() public {
-        vm.expectRevert(IConversion.AddressZero.selector);
+        vm.expectRevert(IKwentaConversion.AddressZero.selector);
         bootstrapLocal.init(address(0), address(0));
-        vm.expectRevert(IConversion.AddressZero.selector);
+        vm.expectRevert(IKwentaConversion.AddressZero.selector);
         bootstrapLocal.init(address(KWENTAMock), address(0));
-        vm.expectRevert(IConversion.AddressZero.selector);
+        vm.expectRevert(IKwentaConversion.AddressZero.selector);
         bootstrapLocal.init(address(0), address(SNXMock));
     }
 
