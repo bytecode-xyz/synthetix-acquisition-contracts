@@ -46,6 +46,11 @@ interface ITLXConversion {
     /// @param value The amount of SNX that was vested
     event SNXVested(address indexed from, address indexed to, uint256 value);
 
+    /// @notice emitted when SNX is withdrawn
+    /// @param to The account that is receiving SNX
+    /// @param value The amount of SNX that was withdrawn
+    event SNXWithdrawn(address indexed to, uint256 value);
+
     /*//////////////////////////////////////////////////////////////
                                 ERRORS
     //////////////////////////////////////////////////////////////*/

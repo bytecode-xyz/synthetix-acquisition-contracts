@@ -539,6 +539,16 @@ contract TLXConversionTest is Bootstrap {
         }
     }
 
+    function testWithdrawEmit() public {
+        basicLock();
+
+        vm.warp(VESTING_START_TIME + WITHDRAW_START);
+        vm.expectEmit(true, true, false, false);
+        emit SNXWithdrawn(SYNTHETIX_TREASURY, CONVERTED_SNX_AMOUNT);
+        vm.prank(SYNTHETIX_TREASURY);
+        conversion.withdrawSNX();
+    }
+
     function testDeploymentAddressZero() public {
         vm.expectRevert(ITLXConversion.AddressZero.selector);
         bootstrapLocal.init(address(0), address(0));

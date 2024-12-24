@@ -19,7 +19,7 @@ contract TLXConversion is ITLXConversion {
     uint256 public constant CONVERSION_RATE = 18;
 
     /// @notice Vesting lock duration in seconds (1 month)
-    uint256 public constant VESTING_LOCK_DURATION = 30 days;
+    uint256 public constant VESTING_LOCK_DURATION = 31 days;
 
     /// @notice Linear vesting duration in seconds (4 month)
     uint256 public constant LINEAR_VESTING_DURATION = 120 days;
@@ -81,7 +81,7 @@ contract TLXConversion is ITLXConversion {
 
     /// @inheritdoc ITLXConversion
     function vestableAmount(address _account) public view returns (uint256) {
-        if (block.timestamp < timeLockEnds) {
+        if (block.timestamp <= timeLockEnds) {
             return 0;
         }
         if (claimedSNX[_account] >= owedSNX[_account]) {
@@ -144,6 +144,8 @@ contract TLXConversion is ITLXConversion {
         if (block.timestamp < VESTING_START_TIME + WITHDRAW_START) {
             revert WithdrawalStartTimeNotReached();
         }
-        SafeERC20.safeTransfer(SNX, msg.sender, SNX.balanceOf(address(this)));
+        uint256 balance = SNX.balanceOf(address(this));
+        SafeERC20.safeTransfer(SNX, msg.sender, balance);
+        emit SNXWithdrawn(SYNTHETIX_TREASURY, balance);
     }
 }
